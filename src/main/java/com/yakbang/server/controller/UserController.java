@@ -1,12 +1,19 @@
 package com.yakbang.server.controller;
 
+import com.yakbang.server.context.StatusCode;
+import com.yakbang.server.dto.request.ImageParsingRequest;
 import com.yakbang.server.dto.request.SignUpRequest;
+import com.yakbang.server.dto.response.DefaultResponse;
+import com.yakbang.server.service.GoogleVisionOCR;
 import com.yakbang.server.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/users")
@@ -28,4 +35,11 @@ public class UserController {
         return userService.nickname(userId);
     }
 
+    // 테스트용 이미지 분석 API
+    @PostMapping("/parse/text/google")
+    public ResponseEntity<?> parseImageByGoogleVision(@RequestBody ImageParsingRequest request) throws IOException {
+        String parsed = GoogleVisionOCR.execute(request.url());
+        return ResponseEntity.ok().body(new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, parsed),
+                HttpStatus.OK));
+    }
 }

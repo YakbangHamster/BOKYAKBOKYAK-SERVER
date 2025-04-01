@@ -17,7 +17,7 @@ public class UserService {
 
     public ResponseEntity<DefaultResponse> signUp(SignUpRequest request) {
         // 유저 생성 및 저장
-        User user = User.create(request.userId(), request.password(), request.name());
+        User user = User.create(request.userId(), request.password(), request.email(), request.name(), request.age(), request.sex(), request.height(), request.weight(), request.disease());
         userRepository.save(user);
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "회원가입 성공"),
