@@ -31,4 +31,12 @@ public class UserConditionController {
 
         return userConditionService.modifyCondition(userId, request);
     }
+
+    // 등록 컨디션 조회
+    @GetMapping("")
+    public ResponseEntity getConditions(@RequestHeader("xAuthToken") String token) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return userConditionService.getConditions(userId);
+    }
 }
