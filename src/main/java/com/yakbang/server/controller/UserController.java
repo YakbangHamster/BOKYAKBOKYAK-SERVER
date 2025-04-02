@@ -1,10 +1,10 @@
 package com.yakbang.server.controller;
 
 import com.yakbang.server.context.StatusCode;
-import com.yakbang.server.dto.request.ImageParsingRequest;
 import com.yakbang.server.dto.request.SignInRequest;
 import com.yakbang.server.dto.request.SignUpRequest;
 import com.yakbang.server.dto.response.DefaultResponse;
+import com.yakbang.server.security.TokenProvider;
 import com.yakbang.server.service.GoogleVisionOCR;
 import com.yakbang.server.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +21,7 @@ import java.util.Map;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-
+    private final TokenProvider tokenProvider;
     private final UserService userService;
 
     // 회원가입
@@ -41,6 +41,13 @@ public class UserController {
     @GetMapping("/identity/check")
     public ResponseEntity checkIdentity(@RequestParam("identity") String identity) {
         return userService.checkIdentity(identity);
+    }
+
+    @PatchMapping("/password")
+    public ResponseEntity changePassword(@RequestHeader("xAuthToken") String token, @RequestBody Map<String, String> passwordMap) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return userService.changePassword(userId, passwordMap.get("password"));
     }
 
     // 테스트용 이미지 분석 API

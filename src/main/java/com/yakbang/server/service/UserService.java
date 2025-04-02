@@ -22,6 +22,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // 회원가입
     public ResponseEntity<DefaultResponse> signUp(SignUpRequest request) {
         // 유저 생성 및 비밀번호 인코딩 후 저장
         String encodedPassword = passwordEncoder.encode(request.password());
@@ -36,6 +37,7 @@ public class UserService {
                 HttpStatus.OK);
     }
 
+    // 로그인
     public ResponseEntity<DefaultResponse> signIn(SignInRequest request) {
         // 유저 아이디 확인
         User user = userRepository.findByIdentity(request.identity());
@@ -54,15 +56,31 @@ public class UserService {
                 HttpStatus.OK);
     }
 
+    // 아이디 확인
     public ResponseEntity<DefaultResponse> checkIdentity(String identity) {
+        // 아이디로 유저 검색
         User user = userRepository.findByIdentity(identity);
         boolean isExist = false;
 
+        // 유저가 있으면 true
         if (user != null) {
             isExist = true;
         }
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "검색 성공", new CheckUsernameReponse(isExist)),
+                HttpStatus.OK);
+    }
+
+    // 비밀번호 변경
+    public ResponseEntity<DefaultResponse> changePassword(Long userId, String password) {
+        // 사용자 받아오기
+        User user = userRepository.findByUserId(userId);
+
+        // 비밀번호 인코딩해서 변경하기
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+
+        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "비밀번호 변경 성공"),
                 HttpStatus.OK);
     }
 
