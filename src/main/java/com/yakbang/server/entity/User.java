@@ -21,26 +21,40 @@ public class User {
     @Column(length = 255, nullable = false)
     private String password;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 20)
     private String email;
 
-    @Column(length = 10, nullable = false)
+    @Column(length = 10)
     private String username;
 
-    @Column(nullable = false)
+    @Column
     private int age;
 
-    @Column(nullable = false)
+    @Column
     private boolean sex;
 
-    @Column(nullable = false)
+    @Column
     private double height;
 
-    @Column(nullable = false)
+    @Column
     private double weight;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 20)
     private String disease;
+
+    public static User create(String identity, String password, String email) {
+        return User.builder()
+                .identity(identity)
+                .password(password)
+                .email(email)
+                .username(null)
+                .age(0)
+                .sex(false)
+                .height(0.0)
+                .weight(0.0)
+                .disease(null)
+                .build();
+    }
 
     public static User create(String identity, String password, String email, String username, int age, boolean sex, double height, double weight, String disease) {
         return User.builder()

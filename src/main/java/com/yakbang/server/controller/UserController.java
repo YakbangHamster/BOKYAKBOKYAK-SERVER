@@ -36,12 +36,13 @@ public class UserController {
         return userService.signIn(request);
     }
 
-
     // 아이디 확인
     @GetMapping("/identity/check")
     public ResponseEntity checkIdentity(@RequestParam("identity") String identity) {
         return userService.checkIdentity(identity);
     }
+
+    @PatchMapping("")
 
     // 테스트용 이미지 분석 API
     @PostMapping("/parse/text/google")

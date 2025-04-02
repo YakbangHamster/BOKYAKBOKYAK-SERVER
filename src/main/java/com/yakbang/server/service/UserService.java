@@ -25,7 +25,7 @@ public class UserService {
     public ResponseEntity<DefaultResponse> signUp(SignUpRequest request) {
         // 유저 생성 및 비밀번호 인코딩 후 저장
         String encodedPassword = passwordEncoder.encode(request.password());
-        User user = User.create(request.identity(), encodedPassword, request.email(), request.username(), request.age(), request.sex(), request.height(), request.weight(), request.disease());
+        User user = User.create(request.identity(), encodedPassword, request.email());
         userRepository.save(user);
 
         // 토큰 생성
