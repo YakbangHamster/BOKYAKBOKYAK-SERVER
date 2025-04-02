@@ -3,6 +3,7 @@ package com.yakbang.server.service;
 import com.yakbang.server.context.StatusCode;
 import com.yakbang.server.dto.request.SignInRequest;
 import com.yakbang.server.dto.request.SignUpRequest;
+import com.yakbang.server.dto.request.AddDetailRequest;
 import com.yakbang.server.dto.response.CheckUsernameReponse;
 import com.yakbang.server.dto.response.DefaultResponse;
 import com.yakbang.server.dto.response.SignUpResponse;
@@ -44,7 +45,7 @@ public class UserService {
 
         // 해당하는 아이디가 없거나, 비밀번호가 일치하지 않는 경우
         if (user == null || !passwordEncoder.matches(request.password(), user.getPassword())) {
-            return new ResponseEntity<>(DefaultResponse.from(StatusCode.BAD_REQUEST, "존재하지 않는 유저입니다."),
+            return new ResponseEntity<>(DefaultResponse.from(StatusCode.BAD_REQUEST, "존재하지 않는 유저 또는 잘못된 비밀번호입니다."),
                     HttpStatus.NOT_FOUND);
         }
 
@@ -81,6 +82,24 @@ public class UserService {
         userRepository.save(user);
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "비밀번호 변경 성공"),
+                HttpStatus.OK);
+    }
+
+    // 상세정보 등록
+    public ResponseEntity<DefaultResponse> addDetail(Long userId, AddDetailRequest request) {
+        // 사용자 받아오기
+        User user = userRepository.findByUserId(userId);
+        
+        // 상세정보 등록하기
+        user.setUsername(request.username());
+        user.setAge(request.age());
+        user.setSex(request.sex());
+        user.setHeight(request.height());
+        user.setWeight(request.weight());
+        user.setDisease(request.disease());
+        userRepository.save(user);
+
+        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "상세정보 등록 성공"),
                 HttpStatus.OK);
     }
 

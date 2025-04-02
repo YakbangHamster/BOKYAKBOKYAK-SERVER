@@ -1,6 +1,7 @@
 package com.yakbang.server.controller;
 
 import com.yakbang.server.context.StatusCode;
+import com.yakbang.server.dto.request.AddDetailRequest;
 import com.yakbang.server.dto.request.SignInRequest;
 import com.yakbang.server.dto.request.SignUpRequest;
 import com.yakbang.server.dto.response.DefaultResponse;
@@ -43,11 +44,20 @@ public class UserController {
         return userService.checkIdentity(identity);
     }
 
+    // 비밀번호 변경
     @PatchMapping("/password")
     public ResponseEntity changePassword(@RequestHeader("xAuthToken") String token, @RequestBody Map<String, String> passwordMap) {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return userService.changePassword(userId, passwordMap.get("password"));
+    }
+
+    // 상세정보 등록
+    @PatchMapping("/detail")
+    public ResponseEntity addDetail(@RequestHeader("xAuthToken") String token, @RequestBody AddDetailRequest request) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return userService.addDetail(userId, request);
     }
 
     // 테스트용 이미지 분석 API
