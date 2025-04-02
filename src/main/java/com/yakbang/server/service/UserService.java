@@ -54,8 +54,8 @@ public class UserService {
                 HttpStatus.OK);
     }
 
-    public ResponseEntity<DefaultResponse> checkUsername(String username) {
-        User user = userRepository.findByUsername(username);
+    public ResponseEntity<DefaultResponse> checkIdentity(String identity) {
+        User user = userRepository.findByIdentity(identity);
         boolean isExist = false;
 
         if (user != null) {

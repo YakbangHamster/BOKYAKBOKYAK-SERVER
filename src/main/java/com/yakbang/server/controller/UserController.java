@@ -37,10 +37,10 @@ public class UserController {
     }
 
 
-    // 테스트용 닉네임 반환 API
-    @GetMapping("/username/check")
-    public ResponseEntity checkUsername(@RequestParam("username") String username) {
-        return userService.checkUsername(username);
+    // 아이디 확인
+    @GetMapping("/identity/check")
+    public ResponseEntity checkIdentity(@RequestParam("identity") String identity) {
+        return userService.checkIdentity(identity);
     }
 
     // 테스트용 이미지 분석 API
