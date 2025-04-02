@@ -3,6 +3,8 @@ package com.yakbang.server.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -41,6 +43,15 @@ public class User {
 
     @Column(length = 20)
     private String disease;
+
+    @OneToMany(mappedBy = "user")
+    private List<Alarm> alarms;
+
+    @OneToMany(mappedBy = "user")
+    private List<MedicineTake> medicineTakes;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserCondition> userConditions;
 
     public static User create(String identity, String password, String email) {
         return User.builder()

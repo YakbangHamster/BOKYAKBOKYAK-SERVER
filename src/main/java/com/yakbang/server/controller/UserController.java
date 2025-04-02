@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -42,12 +43,10 @@ public class UserController {
         return userService.checkIdentity(identity);
     }
 
-    @PatchMapping("")
-
     // 테스트용 이미지 분석 API
-    @PostMapping("/parse/text/google")
-    public ResponseEntity<?> parseImageByGoogleVision(@RequestBody ImageParsingRequest request) throws IOException {
-        String parsed = GoogleVisionOCR.execute(request.url());
+    @GetMapping("/parse/text/google")
+    public ResponseEntity<?> parseImageByGoogleVision(@RequestHeader("xAuthToken") String token, @RequestBody Map<String, String> urlMap) throws IOException {
+        String parsed = GoogleVisionOCR.execute(urlMap.get("url"));
         return ResponseEntity.ok().body(new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, parsed),
                 HttpStatus.OK));
     }
