@@ -1,10 +1,10 @@
 package com.yakbang.server.dto.request;
 
 public record SignUpRequest(
-        String userId,
+        String identity,
         String password,
         String email,
-        String name,
+        String username,
         int age,
         boolean sex,
         double height,

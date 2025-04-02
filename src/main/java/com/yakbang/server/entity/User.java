@@ -11,9 +11,12 @@ import lombok.*;
 @Table(name = "USER")
 public class User {
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id", length = 20, nullable = false)
-    private String userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id", unique = true, nullable = false)
+    private long userId;
+
+    @Column(unique = true, nullable = false)
+    private String identity;
 
     @Column(length = 15, nullable = false)
     private String password;
@@ -22,7 +25,7 @@ public class User {
     private String email;
 
     @Column(length = 10, nullable = false)
-    private String name;
+    private String username;
 
     @Column(nullable = false)
     private int age;
@@ -36,15 +39,15 @@ public class User {
     @Column(nullable = false)
     private double weight;
 
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private String disease;
 
-    public static User create(String userId, String password, String email, String name, int age, boolean sex, double height, double weight, String disease) {
+    public static User create(String identity, String password, String email, String username, int age, boolean sex, double height, double weight, String disease) {
         return User.builder()
-                .userId(userId)
+                .identity(identity)
                 .password(password)
                 .email(email)
-                .name(name)
+                .username(username)
                 .age(age)
                 .sex(sex)
                 .height(height)
