@@ -31,10 +31,10 @@ public class UserController {
     }
 
     // 로그인
-//    @GetMapping("/sign-in")
-//    public ResponseEntity signIn(@RequestBody SignInRequest request) {
-//        return userService.signIn(request);
-//    }
+    @PostMapping("/sign-in")
+    public ResponseEntity signIn(@RequestBody SignInRequest request) {
+        return userService.signIn(request);
+    }
 
 
     // 테스트용 닉네임 반환 API
