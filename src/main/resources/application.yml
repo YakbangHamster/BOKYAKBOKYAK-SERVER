@@ -15,3 +15,9 @@ spring:
   output:
     ansi:
       enabled: always
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html  # Swagger UI URL
+  api-docs:
+    path: /v3/api-docs  # OpenAPI 문서 URL
