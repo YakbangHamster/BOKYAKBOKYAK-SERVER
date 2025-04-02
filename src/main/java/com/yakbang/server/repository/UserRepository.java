@@ -3,6 +3,10 @@ package com.yakbang.server.repository;
 import com.yakbang.server.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, String> {
-    User findByUserId(String userId);
+import java.util.List;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+    User findByUserId(Long userId);
+    User findByIdentity(String identity);
+    User findByUsername(String username);
 }

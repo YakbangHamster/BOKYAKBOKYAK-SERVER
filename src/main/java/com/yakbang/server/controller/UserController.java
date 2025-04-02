@@ -2,6 +2,7 @@ package com.yakbang.server.controller;
 
 import com.yakbang.server.context.StatusCode;
 import com.yakbang.server.dto.request.ImageParsingRequest;
+import com.yakbang.server.dto.request.SignInRequest;
 import com.yakbang.server.dto.request.SignUpRequest;
 import com.yakbang.server.dto.response.DefaultResponse;
 import com.yakbang.server.service.GoogleVisionOCR;
@@ -29,10 +30,17 @@ public class UserController {
         return userService.signUp(request);
     }
 
+    // 로그인
+//    @GetMapping("/sign-in")
+//    public ResponseEntity signIn(@RequestBody SignInRequest request) {
+//        return userService.signIn(request);
+//    }
+
+
     // 테스트용 닉네임 반환 API
-    @GetMapping("/nickname/{user_id}")
-    public ResponseEntity nickname(@PathVariable("user_id") String userId) {
-        return userService.nickname(userId);
+    @GetMapping("/username/check")
+    public ResponseEntity checkUsername(@RequestParam("username") String username) {
+        return userService.checkUsername(username);
     }
 
     // 테스트용 이미지 분석 API
