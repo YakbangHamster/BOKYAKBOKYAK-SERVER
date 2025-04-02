@@ -1,5 +1,6 @@
 package com.yakbang.server.controller;
 
+import com.yakbang.server.dto.request.ModifyConditionRequest;
 import com.yakbang.server.security.TokenProvider;
 import com.yakbang.server.service.UserConditionService;
 import lombok.RequiredArgsConstructor;
@@ -21,5 +22,13 @@ public class UserConditionController {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return userConditionService.addCondition(userId, conditionTextMap.get("conditionText"));
+    }
+
+    // 컨디션 수정
+    @PatchMapping("")
+    public ResponseEntity modifyCondition(@RequestHeader("xAuthToken") String token, @RequestBody ModifyConditionRequest request) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return userConditionService.modifyCondition(userId, request);
     }
 }
