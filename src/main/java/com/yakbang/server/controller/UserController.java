@@ -1,10 +1,11 @@
 package com.yakbang.server.controller;
 
 import com.yakbang.server.context.StatusCode;
-import com.yakbang.server.dto.request.ImageParsingRequest;
+import com.yakbang.server.dto.request.AddDetailRequest;
 import com.yakbang.server.dto.request.SignInRequest;
 import com.yakbang.server.dto.request.SignUpRequest;
 import com.yakbang.server.dto.response.DefaultResponse;
+import com.yakbang.server.security.TokenProvider;
 import com.yakbang.server.service.GoogleVisionOCR;
 import com.yakbang.server.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,12 +16,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-
+    private final TokenProvider tokenProvider;
     private final UserService userService;
 
     // 회원가입
@@ -36,17 +38,40 @@ public class UserController {
         return userService.signIn(request);
     }
 
+    // 아이디 확인
+    @GetMapping("/identity/check")
+    public ResponseEntity checkIdentity(@RequestParam("identity") String identity) {
+        return userService.checkIdentity(identity);
+    }
 
-    // 테스트용 닉네임 반환 API
-    @GetMapping("/username/check")
-    public ResponseEntity checkUsername(@RequestParam("username") String username) {
-        return userService.checkUsername(username);
+    // 비밀번호 변경
+    @PatchMapping("/password")
+    public ResponseEntity changePassword(@RequestHeader("xAuthToken") String token, @RequestBody Map<String, String> passwordMap) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return userService.changePassword(userId, passwordMap.get("password"));
+    }
+
+    // 상세정보 등록
+    @PatchMapping("/detail")
+    public ResponseEntity addDetail(@RequestHeader("xAuthToken") String token, @RequestBody AddDetailRequest request) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return userService.addDetail(userId, request);
+    }
+
+    // 마이페이지 조회
+    @GetMapping("/myPage")
+    public ResponseEntity getMyPage(@RequestHeader("xAuthToken") String token) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return userService.getMyPage(userId);
     }
 
     // 테스트용 이미지 분석 API
-    @PostMapping("/parse/text/google")
-    public ResponseEntity<?> parseImageByGoogleVision(@RequestBody ImageParsingRequest request) throws IOException {
-        String parsed = GoogleVisionOCR.execute(request.url());
+    @GetMapping("/parse/text/google")
+    public ResponseEntity<?> parseImageByGoogleVision(@RequestHeader("xAuthToken") String token, @RequestBody Map<String, String> urlMap) throws IOException {
+        String parsed = GoogleVisionOCR.execute(urlMap.get("url"));
         return ResponseEntity.ok().body(new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, parsed),
                 HttpStatus.OK));
     }

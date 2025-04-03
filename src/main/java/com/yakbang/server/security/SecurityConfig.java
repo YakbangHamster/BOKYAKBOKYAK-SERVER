@@ -20,7 +20,7 @@ public class SecurityConfig {
     private TokenProvider tokenProvider;
     // 인증 없이 요청 가능한 url
     private final String[] allowedUrls = {"/users/sign-up", "/users/sign-in",
-            "/users/username/check"};
+            "/users/identity/check"};
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
