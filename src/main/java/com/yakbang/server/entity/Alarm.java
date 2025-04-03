@@ -1,5 +1,6 @@
 package com.yakbang.server.entity;
 
+import com.yakbang.server.composite_key.AlarmKey;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@IdClass(AlarmKey.class)
 @Table(name = "ALARM")
 public class Alarm {
     @Id
@@ -34,6 +36,17 @@ public class Alarm {
     @Column(length = 15, nullable = false)
     private String start_date;
 
-    @Column(length = 15, nullable = false)
+    @Column(length = 15)
     private String end_date;
+
+    public static Alarm create(User user, Medicine medicine, String time, List<Boolean> schedule, String start_date, String end_date) {
+        return Alarm.builder()
+                .user(user)
+                .medicine(medicine)
+                .time(time)
+                .schedule(schedule)
+                .start_date(start_date)
+                .end_date(end_date)
+                .build();
+    }
 }

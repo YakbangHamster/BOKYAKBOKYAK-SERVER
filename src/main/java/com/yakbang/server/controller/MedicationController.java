@@ -1,6 +1,5 @@
 package com.yakbang.server.controller;
 
-import com.yakbang.server.entity.User;
 import com.yakbang.server.security.TokenProvider;
 import com.yakbang.server.service.MedicationService;
 import lombok.RequiredArgsConstructor;
