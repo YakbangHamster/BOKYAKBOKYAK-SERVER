@@ -37,4 +37,21 @@ public class AlarmService {
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "알림 등록 성공"),
                 HttpStatus.OK);
     }
+
+    // 알림 수정
+    public ResponseEntity<DefaultResponse> modifyAlarm(Long userId, AddAlarmRequest request) {
+        User user = userRepository.findByUserId(userId);
+        Medicine medicine = medicineRepository.findBySerial(request.serial());
+
+        Alarm alarm = alarmRepository.findByUserAndMedicine(user, medicine);
+
+        alarm.setTime(request.time());
+        alarm.setSchedule(request.schedule());
+        if (request.startDate() != null) alarm.setStartDate(request.startDate());
+        if (request.endDate() != null) alarm.setEndDate(request.endDate());
+        alarmRepository.save(alarm);
+
+        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "알림 수정 성공"),
+                HttpStatus.OK);
+    }
 }

@@ -22,4 +22,12 @@ public class AlarmController {
         return alarmService.addAlarm(userId, request);
     }
 
+    // 알림 수정
+    @PatchMapping("")
+    public ResponseEntity modifyAlarm(@RequestHeader("xAuthToken") String token, @RequestBody AddAlarmRequest request) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return alarmService.modifyAlarm(userId, request);
+    }
+
 }

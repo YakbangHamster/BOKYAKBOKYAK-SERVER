@@ -2,14 +2,12 @@ package com.yakbang.server.entity;
 
 import com.yakbang.server.composite_key.AlarmKey;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
+@Setter
 @Getter
 @Builder
 @NoArgsConstructor
@@ -33,20 +31,20 @@ public class Alarm {
     @Column(nullable = false)
     private List<Boolean> schedule;
 
-    @Column(length = 15, nullable = false)
-    private String start_date;
+    @Column(name = "start_date", length = 15, nullable = false)
+    private String startDate;
 
-    @Column(length = 15)
-    private String end_date;
+    @Column(name = "end_date", length = 15)
+    private String endDate;
 
-    public static Alarm create(User user, Medicine medicine, String time, List<Boolean> schedule, String start_date, String end_date) {
+    public static Alarm create(User user, Medicine medicine, String time, List<Boolean> schedule, String startDate, String endDate) {
         return Alarm.builder()
                 .user(user)
                 .medicine(medicine)
                 .time(time)
                 .schedule(schedule)
-                .start_date(start_date)
-                .end_date(end_date)
+                .startDate(startDate)
+                .endDate(endDate)
                 .build();
     }
 }
