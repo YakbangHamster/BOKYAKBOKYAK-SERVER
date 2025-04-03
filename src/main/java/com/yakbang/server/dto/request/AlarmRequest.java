@@ -2,7 +2,7 @@ package com.yakbang.server.dto.request;
 
 import java.util.List;
 
-public record AddAlarmRequest(
+public record AlarmRequest(
         String serial,
         String time,
         List<Boolean> schedule,

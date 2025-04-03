@@ -6,6 +6,9 @@ import com.yakbang.server.entity.Medicine;
 import com.yakbang.server.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface AlarmRepository extends JpaRepository<Alarm, AlarmKey> {
     Alarm findByUserAndMedicine(User user, Medicine medicine);
+    List<Alarm> findAllByUser(User user);
 }
