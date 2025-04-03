@@ -60,6 +60,14 @@ public class UserController {
         return userService.addDetail(userId, request);
     }
 
+    // 마이페이지 조회
+    @GetMapping("/myPage")
+    public ResponseEntity getMyPage(@RequestHeader("xAuthToken") String token) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return userService.getMyPage(userId);
+    }
+
     // 테스트용 이미지 분석 API
     @GetMapping("/parse/text/google")
     public ResponseEntity<?> parseImageByGoogleVision(@RequestHeader("xAuthToken") String token, @RequestBody Map<String, String> urlMap) throws IOException {
