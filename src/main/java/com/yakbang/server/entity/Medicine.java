@@ -36,7 +36,7 @@ public class Medicine {
     private List<Alarm> alarms;
 
     @OneToMany(mappedBy = "medicine")
-    private List<MedicineTake> medicineTakes;
+    private List<Medication> medications;
 
     public static Medicine create(String serial, String name, String image, String chart) {
         return Medicine.builder()

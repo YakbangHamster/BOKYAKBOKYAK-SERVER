@@ -1,20 +1,21 @@
 package com.yakbang.server.entity;
 
+import com.yakbang.server.composite_key.MedicationKey;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Setter
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "MEDICINE_TAKE")
-public class MedicineTake {
+@IdClass(MedicationKey.class)
+@Table(name = "MEDICATION")
+public class Medication {
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
@@ -28,10 +29,15 @@ public class MedicineTake {
     @Column
     private List<String> take_record;
 
-    public static MedicineTake create(User user, Medicine medicine, List<String> take_record) {
-        return MedicineTake.builder()
+    public void setTakeRecord(String record) { take_record.add(record); }
+
+    public static Medication create(User user, Medicine medicine) {
+        List<String> take_record = new ArrayList<>();
+
+        return Medication.builder()
                 .user(user)
                 .medicine(medicine)
+                .take_record(take_record)
                 .build();
     }
 }

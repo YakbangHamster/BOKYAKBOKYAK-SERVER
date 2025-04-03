@@ -49,7 +49,7 @@ public class User {
     private List<Alarm> alarms;
 
     @OneToMany(mappedBy = "user")
-    private List<MedicineTake> medicineTakes;
+    private List<Medication> medications;
 
     @OneToMany(mappedBy = "user")
     private List<UserCondition> userConditions;
