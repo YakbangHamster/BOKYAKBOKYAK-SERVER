@@ -23,6 +23,7 @@ public class UserConditionService {
     private final UserRepository userRepository;
     private final UserConditionRepository userConditionRepository;
 
+    // 컨디션 등록
     public ResponseEntity<DefaultResponse> addCondition(Long userId, String conditionText) {
         // 유저 받아오기
         User user = userRepository.findByUserId(userId);
@@ -35,6 +36,7 @@ public class UserConditionService {
                 HttpStatus.OK);
     }
 
+    // 컨디션 수정
     public ResponseEntity<DefaultResponse> modifyCondition(Long userId, ModifyConditionRequest request) {
         // 유저, 컨디션 받아오기
         User user = userRepository.findByUserId(userId);
@@ -48,6 +50,7 @@ public class UserConditionService {
                 HttpStatus.OK);
     }
 
+    // 등록 컨디션 조회
     public ResponseEntity<DefaultResponse> getConditions(Long userId) {
         // 유저, 전체 컨디션 받아오기
         User user = userRepository.findByUserId(userId);
