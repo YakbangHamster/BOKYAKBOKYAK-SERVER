@@ -6,11 +6,13 @@ import com.yakbang.server.dto.request.SignInRequest;
 import com.yakbang.server.dto.request.SignUpRequest;
 import com.yakbang.server.dto.response.DefaultResponse;
 import com.yakbang.server.security.TokenProvider;
+import com.yakbang.server.service.ChatService;
 import com.yakbang.server.service.GoogleVisionOCR;
 import com.yakbang.server.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,7 @@ import java.util.Map;
 public class UserController {
     private final TokenProvider tokenProvider;
     private final UserService userService;
+    private final ChatService chatService;
 
     // 회원가입
     @Operation(summary = "회원가입")
@@ -66,13 +69,5 @@ public class UserController {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return userService.getMyPage(userId);
-    }
-
-    // 테스트용 이미지 분석 API
-    @GetMapping("/parse/text/google")
-    public ResponseEntity<?> parseImageByGoogleVision(@RequestHeader("xAuthToken") String token, @RequestBody Map<String, String> urlMap) throws IOException {
-        String parsed = GoogleVisionOCR.execute(urlMap.get("url"));
-        return ResponseEntity.ok().body(new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, parsed),
-                HttpStatus.OK));
     }
 }
