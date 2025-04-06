@@ -37,7 +37,7 @@ public class MedicationService {
     // 부작용 조회
     public ResponseEntity<DefaultResponse> searchSideEffect(String serial) throws IOException, ParseException {
         Medicine medicine = medicineRepository.findBySerial(serial);
-        String response = chatService.getChatGPT(medicine.getName() + "의 부작용 알려줘");
+        String response = chatService.getChatGPT(medicine.getName() + "의 부작용 상세하게 알려줘. 한국 약 기준으로 부작용부터 알려줘.");
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "부작용 조회 성공", response),
                 HttpStatus.OK);
