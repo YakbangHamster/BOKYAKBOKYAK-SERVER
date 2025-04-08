@@ -38,10 +38,10 @@ public class UserController {
         return userService.signIn(request);
     }
 
-    // accessToken 요청
+    // Access Token 재발급
     @PostMapping("/reissue")
-    public ResponseEntity<DefaultResponse> reissue(@RequestBody Map<String, String> refreshTokenMap) {
-        return userService.reissue(refreshTokenMap.get("refreshToken"));
+    public ResponseEntity<DefaultResponse> reissue(@RequestHeader("refresh") String refreshToken) {
+        return userService.reissue(refreshToken.replace("Bearer ", ""));
     }
 
     // 아이디 확인
