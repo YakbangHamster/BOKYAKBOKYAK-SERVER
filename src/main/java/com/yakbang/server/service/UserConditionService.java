@@ -24,10 +24,7 @@ public class UserConditionService {
     private final UserConditionRepository userConditionRepository;
 
     // 컨디션 등록
-    public ResponseEntity<DefaultResponse> addCondition(Long userId, String conditionText) {
-        // 유저 받아오기
-        User user = userRepository.findByUserId(userId);
-
+    public ResponseEntity<DefaultResponse> addCondition(User user, String conditionText) {
         // 컨디션 등록
         UserCondition userCondition = UserCondition.create(user, conditionText, LocalDate.now().toString());
         userConditionRepository.save(userCondition);
@@ -37,9 +34,8 @@ public class UserConditionService {
     }
 
     // 컨디션 수정
-    public ResponseEntity<DefaultResponse> modifyCondition(Long userId, ModifyConditionRequest request) {
-        // 유저, 컨디션 받아오기
-        User user = userRepository.findByUserId(userId);
+    public ResponseEntity<DefaultResponse> modifyCondition(User user, ModifyConditionRequest request) {
+        // 컨디션 받아오기
         UserCondition userCondition = userConditionRepository.findByDate(request.date());
 
         // 컨디션 텍스트 수정
@@ -51,9 +47,8 @@ public class UserConditionService {
     }
 
     // 등록 컨디션 조회
-    public ResponseEntity<DefaultResponse> getConditions(Long userId) {
-        // 유저, 전체 컨디션 받아오기
-        User user = userRepository.findByUserId(userId);
+    public ResponseEntity<DefaultResponse> getConditions(User user) {
+        // 전체 컨디션 받아오기
         List<UserCondition> userConditionList = userConditionRepository.findAllByUser(user);
 
         // 응답으로 보낼 response

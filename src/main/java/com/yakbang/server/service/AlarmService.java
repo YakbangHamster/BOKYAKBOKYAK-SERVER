@@ -27,8 +27,7 @@ public class AlarmService {
     private final AlarmRepository alarmRepository;
 
     // 알림 등록
-    public ResponseEntity<DefaultResponse> addAlarm(Long userId, AlarmRequest request) {
-        User user = userRepository.findByUserId(userId);
+    public ResponseEntity<DefaultResponse> addAlarm(User user, AlarmRequest request) {
         Medicine medicine = medicineRepository.findBySerial(request.serial());
 
         String startDate = request.startDate();
@@ -41,8 +40,7 @@ public class AlarmService {
     }
 
     // 알림 수정
-    public ResponseEntity<DefaultResponse> modifyAlarm(Long userId, AlarmRequest request) {
-        User user = userRepository.findByUserId(userId);
+    public ResponseEntity<DefaultResponse> modifyAlarm(User user, AlarmRequest request) {
         Medicine medicine = medicineRepository.findBySerial(request.serial());
 
         Alarm alarm = alarmRepository.findByUserAndMedicine(user, medicine);
@@ -58,9 +56,7 @@ public class AlarmService {
     }
 
     // 등록 알림 조회
-    public ResponseEntity<DefaultResponse> getAlarm(Long userId) {
-        User user = userRepository.findByUserId(userId);
-
+    public ResponseEntity<DefaultResponse> getAlarm(User user) {
         List<AlarmResponse> alarmList = new ArrayList<>();
         List<Alarm> alarms = alarmRepository.findAllByUser(user);
 

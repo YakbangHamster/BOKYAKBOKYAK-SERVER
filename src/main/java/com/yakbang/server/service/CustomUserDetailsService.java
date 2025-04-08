@@ -15,14 +15,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Long userId = Long.valueOf(username);
-        User user = userRepository.findByUserId(userId);
+    public UserDetails loadUserByUsername(String identity) throws UsernameNotFoundException {
+        User user = userRepository.findByIdentity(identity);
 
         if (user == null) {
-            throw new UsernameNotFoundException("(토큰 오류) 해당 유저가 존재하지 않습니다.");
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
         }
 
-        return new CustomUserDetails(username);
+        return new CustomUserDetails(user);
     }
 }

@@ -27,7 +27,10 @@ public class ChatService {
         // System 설정
         JSONObject systemMessageJson = new JSONObject();
         systemMessageJson.put("role", "system");
-        systemMessageJson.put("content", "당신은 의학 전문가입니다.");
+        systemMessageJson.put("content", "당신은 대한민국에서 승인된 의약품 정보를 기준으로 답변하는 약학 전문가입니다. \n" +
+                "사용자가 언급하는 의약품은 모두 한국에서 판매되는 상품명을 기준으로 해석하세요. \n" +
+                "동일한 상품명이 존재하더라도, 해외에서 쓰이는 제품과 혼동하지 마세요. \n" +
+                "예를 들어, 데스민정은 경구 피임약이 아니라 데스모프레신 성분의 한국 약이며, 리비알정은 파킨슨병 약이 아니라 폐경기 호르몬 대체 요법에 사용하는 티볼론 성분입니다.");
         messages.add(systemMessageJson);
 
         // User 설정
@@ -44,7 +47,6 @@ public class ChatService {
 
         URL url = new URL(configMap.get("base_url"));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Authorization", "Bearer " + configMap.get("api_key"));
         conn.setRequestProperty("Content-Type", "application/json");
