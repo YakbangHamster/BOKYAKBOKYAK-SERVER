@@ -1,10 +1,13 @@
 package com.yakbang.server.controller;
 
+import com.yakbang.server.dto.etc.CustomUserDetails;
 import com.yakbang.server.dto.request.ModifyConditionRequest;
+import com.yakbang.server.entity.User;
 import com.yakbang.server.security.TokenProvider;
 import com.yakbang.server.service.UserConditionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -18,25 +21,19 @@ public class UserConditionController {
 
     // 컨디션 등록
     @PostMapping("")
-    public ResponseEntity addCondition(@RequestHeader("xAuthToken") String token, @RequestBody Map<String, String> conditionTextMap) {
-        Long userId = tokenProvider.getUserIdFromToken(token);
-
-        return userConditionService.addCondition(userId, conditionTextMap.get("conditionText"));
+    public ResponseEntity addCondition(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> conditionTextMap) {
+        return userConditionService.addCondition(userDetails.getUser(), conditionTextMap.get("conditionText"));
     }
 
     // 컨디션 수정
     @PatchMapping("")
-    public ResponseEntity modifyCondition(@RequestHeader("xAuthToken") String token, @RequestBody ModifyConditionRequest request) {
-        Long userId = tokenProvider.getUserIdFromToken(token);
-
-        return userConditionService.modifyCondition(userId, request);
+    public ResponseEntity modifyCondition(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ModifyConditionRequest request) {
+        return userConditionService.modifyCondition(userDetails.getUser(), request);
     }
 
     // 등록 컨디션 조회
     @GetMapping("")
-    public ResponseEntity getConditions(@RequestHeader("xAuthToken") String token) {
-        Long userId = tokenProvider.getUserIdFromToken(token);
-
-        return userConditionService.getConditions(userId);
+    public ResponseEntity getConditions(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return userConditionService.getConditions(userDetails.getUser());
     }
 }

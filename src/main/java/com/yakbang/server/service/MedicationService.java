@@ -44,8 +44,8 @@ public class MedicationService {
     }
 
     // 복용 확인 등록
-    public ResponseEntity<DefaultResponse> addMedication(Long userId, String serial) {
-        User user = userRepository.findByUserId(userId);
+    public ResponseEntity<DefaultResponse> addMedication(User user, String serial) {
+        User managedUser = userRepository.findByUserId(user.getUserId());
         Medicine medicine = medicineRepository.findBySerial(serial);
 
         // 복용 기록 확인하기

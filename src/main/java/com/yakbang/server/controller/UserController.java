@@ -1,30 +1,27 @@
 package com.yakbang.server.controller;
 
-import com.yakbang.server.context.StatusCode;
+import com.yakbang.server.dto.etc.CustomUserDetails;
 import com.yakbang.server.dto.request.AddDetailRequest;
 import com.yakbang.server.dto.request.SignInRequest;
 import com.yakbang.server.dto.request.SignUpRequest;
 import com.yakbang.server.dto.response.DefaultResponse;
+import com.yakbang.server.entity.User;
 import com.yakbang.server.security.TokenProvider;
 import com.yakbang.server.service.ChatService;
-import com.yakbang.server.service.GoogleVisionOCR;
 import com.yakbang.server.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.parser.ParseException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final TokenProvider tokenProvider;
     private final UserService userService;
     private final ChatService chatService;
 
@@ -41,6 +38,12 @@ public class UserController {
         return userService.signIn(request);
     }
 
+    // accessToken 요청
+    @PostMapping("/reissue")
+    public ResponseEntity<DefaultResponse> reissue(@RequestBody Map<String, String> refreshTokenMap) {
+        return userService.reissue(refreshTokenMap.get("refreshToken"));
+    }
+
     // 아이디 확인
     @GetMapping("/identity/check")
     public ResponseEntity checkIdentity(@RequestParam("identity") String identity) {
@@ -49,25 +52,19 @@ public class UserController {
 
     // 비밀번호 변경
     @PatchMapping("/password")
-    public ResponseEntity changePassword(@RequestHeader("xAuthToken") String token, @RequestBody Map<String, String> passwordMap) {
-        Long userId = tokenProvider.getUserIdFromToken(token);
-
-        return userService.changePassword(userId, passwordMap.get("password"));
+    public ResponseEntity changePassword(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> passwordMap) {
+        return userService.changePassword(userDetails.getUser(), passwordMap.get("password"));
     }
 
     // 상세정보 등록
     @PatchMapping("/detail")
-    public ResponseEntity addDetail(@RequestHeader("xAuthToken") String token, @RequestBody AddDetailRequest request) {
-        Long userId = tokenProvider.getUserIdFromToken(token);
-
-        return userService.addDetail(userId, request);
+    public ResponseEntity addDetail(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody AddDetailRequest request) {
+        return userService.addDetail(userDetails.getUser(), request);
     }
 
     // 마이페이지 조회
     @GetMapping("/myPage")
-    public ResponseEntity getMyPage(@RequestHeader("xAuthToken") String token) {
-        Long userId = tokenProvider.getUserIdFromToken(token);
-
-        return userService.getMyPage(userId);
+    public ResponseEntity getMyPage(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return userService.getMyPage(userDetails.getUser());
     }
 }

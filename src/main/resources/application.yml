@@ -11,6 +11,9 @@ spring:
       ddl-auto: update
     show-sql: true
 
+  config:
+    import: classpath:jwt.yml
+
   # 콘솔 색상 출력
   output:
     ansi:

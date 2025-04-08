@@ -1,88 +1,96 @@
 package com.yakbang.server.security;
 
-import com.yakbang.server.service.CustomUserDetailsService;
+import com.yakbang.server.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
-import java.time.Instant;
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.Base64;
 import java.util.Date;
 
 @Component
-@PropertySource("classpath:jwt.yml")
 public class TokenProvider {
-    private final String secretKey;
-    private final long expirationDays;
-    private final String issuer;
+    private final byte[] secretKey;
 
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private final long ACCESS_TOKEN_EXPIRY = 1000L * 60 * 30; // 30분
+    private final long REFRESH_TOKEN_EXPIRY = 1000L * 60 * 60 * 24 * 7; // 7일
 
-    public TokenProvider(
-            @Value("${secret-key}") String secretKey,
-            @Value("${expiration-days}") long expirationDays,
-            @Value("${issuer}") String issuer
-    ) {
-        this.secretKey = secretKey;
-        this.expirationDays = expirationDays;
-        this.issuer = issuer;
+    public TokenProvider(@Value("${jwt.secret-key}") String secretKey) {
+        this.secretKey = Base64.getDecoder().decode(secretKey);
     }
 
-    public String createAccessToken(Long userId) {
+    public String generateAccessToken(User user) {
         return Jwts.builder()
-                .signWith(SignatureAlgorithm.HS512, secretKey.getBytes())
-                .claim("userId", userId)
-                .setIssuer(issuer)
-                .setIssuedAt(Timestamp.valueOf(LocalDateTime.now()))
-                .setExpiration(Date.from(Instant.now().plus(expirationDays, ChronoUnit.DAYS)))
+                .setSubject(user.getIdentity())
+                .claim("userId", user.getUserId())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRY))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
-    // 토큰의 Claim 디코딩
-    public Claims getAllClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(secretKey.getBytes())
+    public String generateRefreshToken(User user) {
+        return Jwts.builder()
+                .setSubject(user.getIdentity())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRY))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
+    public LocalDateTime getRefreshTokenExpiryTime() {
+        return LocalDateTime.now().plus(Duration.ofMillis(REFRESH_TOKEN_EXPIRY));
+    }
+
+    // access token 받아오기
+    public String resolveAccessToken(HttpServletRequest request) {
+        String bearer = request.getHeader("Authorization");
+        if (bearer != null && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
+        }
+        return null;
+    }
+
+    // refresh token 받아오기
+    public String resolveRefreshToken(HttpServletRequest request) {
+        String bearer = request.getHeader("Refresh");
+        if (bearer != null && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
+        }
+        return null;
+    }
+
+    // 토큰 유효성 검증
+    public boolean isValidToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // token에서 identity 값 가져오기
+    public String getIdentityFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
+        return claims.getSubject();
     }
-
-    // 인증 정보 조회
-    public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(getUserIdFromToken(token).toString());
-
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-    }
-
-    // Claim 중 userId 값 빼오기
+    
+    // token에서 userId 값 가져오기
     public Long getUserIdFromToken(String token) {
-        String userIdStr = getAllClaims(token).get("userId").toString();
-        return Long.valueOf(userIdStr);
-    }
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
 
-    // 토큰 만료기한 가져오기
-    public Date getExpirationDate(String token) {
-        return getAllClaims(token).getExpiration();
-    }
-
-    // 토큰이 만료되었는지 검증
-    // true: 만료됨
-    public boolean isTokenExpired(String token) {
-        return getExpirationDate(token).before(new Date());
-    }
-
-    // Request의 Header에서 토큰 값 가져오기
-    public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("xAuthToken");
+        return claims.get("userId", Long.class);
     }
 }

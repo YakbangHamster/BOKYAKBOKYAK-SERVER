@@ -1,108 +1,80 @@
 package com.yakbang.server.security;
 
-import com.yakbang.server.context.StatusCode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yakbang.server.dto.response.DefaultResponse;
+import com.yakbang.server.entity.User;
+import com.yakbang.server.repository.UserRepository;
+import com.yakbang.server.service.CustomUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @Slf4j
-@RequiredArgsConstructor
+@Component
 public class JwtAuthenticateFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final UserRepository userRepository;
+
+    public JwtAuthenticateFilter(TokenProvider tokenProvider, CustomUserDetailsService customUserDetailsService, UserRepository userRepository) {
+        this.tokenProvider = tokenProvider;
+        this.customUserDetailsService = customUserDetailsService;
+        this.userRepository = userRepository;
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // Swagger 및 API 문서 경로는 필터 적용 제외
-        String uri = request.getRequestURI();
-        if (uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+//        String uri = request.getRequestURI();
+//        if (uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs")) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
 
-        // 헤더에서 토큰 받아오기
-        String token = tokenProvider.resolveToken(request);
+        String accessToken = tokenProvider.resolveAccessToken(request);
 
-        // 유저 인증 정보
-        Authentication authentication = null;
-
-        // 토큰 유효 검사
-        boolean isGood = false;
-        int statusCode = -1;   // 에러 시 보낼 상태 코드
-        String exceptionMessage = "";   // 에러 시 보낼 메시지
         try {
-            // 토큰 만료 체크
-            isGood = !tokenProvider.isTokenExpired(token);
+            if (accessToken != null && tokenProvider.isValidToken(accessToken)) {
+                String identity = tokenProvider.getIdentityFromToken(accessToken);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(identity);
 
-            // 토큰으로부터 유저 정보를 받기
-            authentication = tokenProvider.getAuthentication(token);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         } catch (ExpiredJwtException e) {
-            log.error("토큰 만료");
+            // access token이 만료된 경우
+            String refreshToken = tokenProvider.resolveRefreshToken(request);
 
-            // 상태 코드 및 에러 메시지 세팅 (401)
-            statusCode = StatusCode.UNAUTHORIZED;
-            exceptionMessage = "토큰이 만료되었습니다";
-        } catch (IllegalArgumentException e) {
-            log.info("요청 uri : " + request.getRequestURI());
-            log.error("토큰이 없음");
+            if (refreshToken != null && tokenProvider.isValidToken(refreshToken)) {
+                String identity = tokenProvider.getIdentityFromToken(refreshToken);
+                User user = userRepository.findByIdentity(identity);
 
-            // 상태 코드 및 에러 메시지 세팅 (400)
-            statusCode = StatusCode.BAD_REQUEST;
-            exceptionMessage = "토큰이 존재하지 않습니다.";
-        } catch (MalformedJwtException e) {
-            log.error("토큰의 값이 유효하지 않음");
+                // 새 access token 발급
+                String newAccessToken = tokenProvider.generateAccessToken(user);
 
-            // 상태 코드 및 에러 메시지 세팅 (400)
-            statusCode = StatusCode.BAD_REQUEST;
-            exceptionMessage = "토큰의 값이 유효하지 않습니다.";
-        } catch (io.jsonwebtoken.SignatureException e) {
-            log.error("토큰의 서명이 올바르지 않음");
+                // 헤더에 새 access token 추가
+                response.setHeader("Authorization", "Bearer " + newAccessToken);
 
-            // 상태 코드 및 에러 메시지 세팅 (401)
-            statusCode = StatusCode.UNAUTHORIZED;
-            exceptionMessage = "토큰의 서명이 올바르지 않습니다.";
-        } catch (UsernameNotFoundException e) {
-            log.error("해당 유저 없음");
+                // 인증 객체 설정
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(identity);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-            // 검증 실패 설정
-            isGood = false;
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
 
-            // 상태 코드 및 에러 메시지 세팅 (404)
-            statusCode = StatusCode.NOT_FOUND;
-            exceptionMessage = e.getMessage();
         }
 
-        // 토큰이 무언가 잘못되었다면
-        if (!isGood) {
-            response.setStatus(statusCode);
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setCharacterEncoding("UTF-8");
-
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(response.getWriter(), DefaultResponse.from(statusCode, exceptionMessage));
-        }
-        // 토큰이 유효하다면
-        else if (token != null) {
-            // 토큰으로부터 받은 유저 정보를 저장
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            // 다음 Filter 실행
-            filterChain.doFilter(request, response);
-        }
+        filterChain.doFilter(request, response);
     }
 }
