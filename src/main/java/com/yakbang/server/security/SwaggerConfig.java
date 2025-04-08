@@ -12,16 +12,18 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
-        String jwt = "JWT";
+        String securitySchemeName = "Authorization"; // Bearer 토큰 사용
 
         // JWT 토큰을 HTTP 헤더에서 읽도록 설정
         SecurityScheme securityScheme = new SecurityScheme()
-                .name("xAuthToken")
-                .type(SecurityScheme.Type.APIKEY)
+                .name(securitySchemeName)
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT")
                 .in(SecurityScheme.In.HEADER);
 
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwt);
-        Components components = new Components().addSecuritySchemes(jwt, securityScheme);
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(securitySchemeName);
+        Components components = new Components().addSecuritySchemes(securitySchemeName, securityScheme);
 
         return new OpenAPI()
                 .components(components) // Security 설정 추가
