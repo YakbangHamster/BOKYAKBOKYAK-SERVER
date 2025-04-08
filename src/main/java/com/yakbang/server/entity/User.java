@@ -42,8 +42,8 @@ public class User {
     @Column
     private double weight;
 
-    @Column(length = 20)
-    private String disease;
+    @Column
+    private List<String> disease;
 
     @OneToMany(mappedBy = "user")
     private List<Alarm> alarms;
@@ -68,7 +68,7 @@ public class User {
                 .build();
     }
 
-    public static User create(String identity, String password, String email, String username, int age, boolean sex, double height, double weight, String disease) {
+    public static User create(String identity, String password, String email, String username, int age, boolean sex, double height, double weight, List<String> disease) {
         return User.builder()
                 .identity(identity)
                 .password(password)

@@ -1,5 +1,7 @@
 package com.yakbang.server.dto.response;
 
+import java.util.List;
+
 public record MyPageResponse(
         String name,
         String email,
@@ -7,5 +9,5 @@ public record MyPageResponse(
         boolean sex,
         double height,
         double weight,
-        String disease
+        List<String> disease
 ) {}
