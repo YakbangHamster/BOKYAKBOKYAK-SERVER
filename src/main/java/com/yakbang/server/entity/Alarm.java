@@ -1,6 +1,5 @@
 package com.yakbang.server.entity;
 
-import com.yakbang.server.composite_key.AlarmKey;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,39 +11,32 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@IdClass(AlarmKey.class)
 @Table(name = "ALARM")
 public class Alarm {
     @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private User user;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "alarm_id")
+    private Long alarmId;
 
-    @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "medicine_id", referencedColumnName = "medicine_id")
-    private Medicine medicine;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+            @JoinColumn(name = "user_id", referencedColumnName = "user_id"),
+            @JoinColumn(name = "medicine_id", referencedColumnName = "medicine_id")
+    })
+    private Medication medication;
 
-    @Column(length = 10, nullable = false)
-    private String time;
+    @ElementCollection
+    @CollectionTable(
+            name = "alarm_time",
+            joinColumns = @JoinColumn(name = "alarm_id")
+    )
+    @Column(name = "time_list")
+    private List<String> timeList;
 
-    @Column(nullable = false)
-    private List<Boolean> schedule;
-
-    @Column(name = "start_date", length = 15, nullable = false)
-    private String startDate;
-
-    @Column(name = "end_date", length = 15)
-    private String endDate;
-
-    public static Alarm create(User user, Medicine medicine, String time, List<Boolean> schedule, String startDate, String endDate) {
+    public static Alarm create(Medication medication, List<String> timeList) {
         return Alarm.builder()
-                .user(user)
-                .medicine(medicine)
-                .time(time)
-                .schedule(schedule)
-                .startDate(startDate)
-                .endDate(endDate)
+                .medication(medication)
+                .timeList(timeList)
                 .build();
     }
 }

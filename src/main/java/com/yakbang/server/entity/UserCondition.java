@@ -20,16 +20,16 @@ public class UserCondition {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
-    @Column(name = "condition_text", length = 100, nullable = false)
-    private String conditionText;
+    @Column(name = "emoji_code", length = 3, nullable = false)
+    private String emojiCode;
 
     @Column(length = 15, nullable = false)
     private String date;
 
-    public static UserCondition create(User user, String conditionText, String date) {
+    public static UserCondition create(User user, String emojiCode, String date) {
         return UserCondition.builder()
                 .user(user)
-                .conditionText(conditionText)
+                .emojiCode(emojiCode)
                 .date(date)
                 .build();
     }

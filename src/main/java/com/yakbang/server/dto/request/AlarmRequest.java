@@ -4,8 +4,5 @@ import java.util.List;
 
 public record AlarmRequest(
         String serial,
-        String time,
-        List<Boolean> schedule,
-        String startDate,
-        String endDate
+        List<String> timeList
 ) {}

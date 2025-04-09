@@ -29,21 +29,22 @@ public class Medicine {
     @Column(length = 100, nullable = false)
     private String image;
 
-    @Column(length = 100, nullable = false)
-    private String chart;
+    @Column(nullable = false)
+    private String efficacy;
 
-    @OneToMany(mappedBy = "medicine")
-    private List<Alarm> alarms;
+    @Column(length = 3000, nullable = false)
+    private String howToTake;
 
     @OneToMany(mappedBy = "medicine")
     private List<Medication> medications;
 
-    public static Medicine create(String serial, String name, String image, String chart) {
+    public static Medicine create(String serial, String name, String image, String efficacy, String howToTake) {
         return Medicine.builder()
                 .serial(serial)
                 .name(name)
                 .image(image)
-                .chart(chart)
+                .efficacy(efficacy)
+                .howToTake(howToTake)
                 .build();
     }
 }

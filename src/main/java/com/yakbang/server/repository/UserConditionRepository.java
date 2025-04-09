@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface UserConditionRepository extends JpaRepository<UserCondition, Long> {
     UserCondition findByDate(String date);
+    UserCondition findByUserAndDate(User user, String date);
     List<UserCondition> findAllByUser(User user);
 }

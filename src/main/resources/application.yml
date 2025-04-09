@@ -12,7 +12,7 @@ spring:
     show-sql: true
 
   config:
-    import: classpath:jwt.yml
+    import: classpath:jwt.yml, classpath:chatConfig.yml, classpath:medicineConfig.yml, classpath:medicineDetailConfig.yml
 
   # 콘솔 색상 출력
   output:

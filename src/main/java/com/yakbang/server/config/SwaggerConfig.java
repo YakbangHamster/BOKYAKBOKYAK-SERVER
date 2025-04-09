@@ -1,4 +1,4 @@
-package com.yakbang.server.security;
+package com.yakbang.server.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

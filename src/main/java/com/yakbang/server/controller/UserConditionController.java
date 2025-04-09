@@ -21,14 +21,20 @@ public class UserConditionController {
 
     // 컨디션 등록
     @PostMapping("")
-    public ResponseEntity addCondition(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> conditionTextMap) {
-        return userConditionService.addCondition(userDetails.getUser(), conditionTextMap.get("conditionText"));
+    public ResponseEntity addCondition(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> emojiCodeMap) {
+        return userConditionService.addCondition(userDetails.getUser(), emojiCodeMap.get("emojiCode"));
     }
 
     // 컨디션 수정
     @PatchMapping("")
     public ResponseEntity modifyCondition(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ModifyConditionRequest request) {
         return userConditionService.modifyCondition(userDetails.getUser(), request);
+    }
+
+    // 컨디션 삭제
+    @DeleteMapping("")
+    public ResponseEntity deleteCondition(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> dateMap) {
+        return userConditionService.deleteCondition(userDetails.getUser(), dateMap.get("date"));
     }
 
     // 등록 컨디션 조회

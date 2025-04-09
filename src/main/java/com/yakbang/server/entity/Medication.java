@@ -27,17 +27,37 @@ public class Medication {
     private Medicine medicine;
 
     @Column
-    private List<String> take_record;
+    private List<Boolean> schedule;
 
-    public void setTakeRecord(String record) { take_record.add(record); }
+    @Column(name = "start_date", length = 15)
+    private String startDate;
+
+    @Column(name = "end_date", length = 15)
+    private String endDate;
+
+    @Column
+    private int number;
+
+    @Column(name = "take_record")
+    private List<String> takeRecord;
+
+    @OneToOne(mappedBy = "medication")
+    private Alarm alarm;
+
+    public void setTakeRecord(String record) { takeRecord.add(record); }
 
     public static Medication create(User user, Medicine medicine) {
-        List<String> take_record = new ArrayList<>();
+        List<Boolean> schedule = new ArrayList<>();
+        List<String> takeRecord = new ArrayList<>();
 
         return Medication.builder()
                 .user(user)
                 .medicine(medicine)
-                .take_record(take_record)
+                .schedule(schedule)
+                .startDate(null)
+                .endDate(null)
+                .number(0)
+                .takeRecord(takeRecord)
                 .build();
     }
 }
