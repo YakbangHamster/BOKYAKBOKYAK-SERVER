@@ -4,6 +4,7 @@ import com.yakbang.server.composite_key.AlarmKey;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,26 +26,22 @@ public class Alarm {
     @JoinColumn(name = "medicine_id", referencedColumnName = "medicine_id")
     private Medicine medicine;
 
-    @Column(length = 10, nullable = false)
-    private String time;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+            @JoinColumn(name = "user_id", referencedColumnName = "user_id"),
+            @JoinColumn(name = "medicine_id", referencedColumnName = "medicine_id")
+    })
+    private Medication medication;
 
-    @Column(nullable = false)
-    private List<Boolean> schedule;
+    @Column
+    private List<String> timeList;
 
-    @Column(name = "start_date", length = 15, nullable = false)
-    private String startDate;
-
-    @Column(name = "end_date", length = 15)
-    private String endDate;
-
-    public static Alarm create(User user, Medicine medicine, String time, List<Boolean> schedule, String startDate, String endDate) {
+    public static Alarm create(User user, Medicine medicine, Medication medication, List<String> timeList) {
         return Alarm.builder()
                 .user(user)
                 .medicine(medicine)
-                .time(time)
-                .schedule(schedule)
-                .startDate(startDate)
-                .endDate(endDate)
+                .medication(medication)
+                .timeList(timeList)
                 .build();
     }
 }

@@ -39,7 +39,7 @@ public class UserConditionService {
         UserCondition userCondition = userConditionRepository.findByDate(request.date());
 
         // 컨디션 텍스트 수정
-        userCondition.setConditionText(request.conditionText());
+        userCondition.setEmojiCode(request.emojiCode());
         userConditionRepository.save(userCondition);
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "컨디션 수정 성공"),
@@ -58,7 +58,7 @@ public class UserConditionService {
         for (int i = 0; i <userConditionList.size(); i++) {
             UserCondition userCondition = userConditionList.get(i);
 
-            userConditionResponse.add(new UserConditionResponse(userCondition.getDate(), userCondition.getConditionText()));
+            userConditionResponse.add(new UserConditionResponse(userCondition.getDate(), userCondition.getEmojiCode()));
         }
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "컨디션 조회 성공", userConditionResponse),

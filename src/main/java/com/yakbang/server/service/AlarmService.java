@@ -5,9 +5,11 @@ import com.yakbang.server.dto.request.AlarmRequest;
 import com.yakbang.server.dto.response.DefaultResponse;
 import com.yakbang.server.dto.response.AlarmResponse;
 import com.yakbang.server.entity.Alarm;
+import com.yakbang.server.entity.Medication;
 import com.yakbang.server.entity.Medicine;
 import com.yakbang.server.entity.User;
 import com.yakbang.server.repository.AlarmRepository;
+import com.yakbang.server.repository.MedicationRepository;
 import com.yakbang.server.repository.MedicineRepository;
 import com.yakbang.server.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,15 +26,15 @@ import java.util.List;
 public class AlarmService {
     private final UserRepository userRepository;
     private final MedicineRepository medicineRepository;
+    private final MedicationRepository medicationRepository;
     private final AlarmRepository alarmRepository;
 
     // 알림 등록
     public ResponseEntity<DefaultResponse> addAlarm(User user, AlarmRequest request) {
         Medicine medicine = medicineRepository.findBySerial(request.serial());
+        Medication medication = medicationRepository.findByUserAndMedicine(user, medicine);
 
-        String startDate = request.startDate();
-        if (startDate == null) startDate = LocalDate.now().toString();
-        Alarm alarm = Alarm.create(user, medicine, request.time(), request.schedule(), startDate, request.endDate());
+        Alarm alarm = Alarm.create(user, medicine, medication, request.timeList());
         alarmRepository.save(alarm);
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "알림 등록 성공"),
@@ -45,10 +47,7 @@ public class AlarmService {
 
         Alarm alarm = alarmRepository.findByUserAndMedicine(user, medicine);
 
-        alarm.setTime(request.time());
-        alarm.setSchedule(request.schedule());
-        if (request.startDate() != null) alarm.setStartDate(request.startDate());
-        if (request.endDate() != null) alarm.setEndDate(request.endDate());
+        alarm.setTimeList(request.timeList());
         alarmRepository.save(alarm);
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "알림 수정 성공"),
@@ -63,7 +62,7 @@ public class AlarmService {
         for (int i = 0; i < alarms.size(); i++) {
             Alarm alarm = alarms.get(i);
 
-            alarmList.add(new AlarmResponse(alarm.getMedicine().getSerial(), alarm.getMedicine().getName(), alarm.getTime(), alarm.getSchedule(), alarm.getStartDate(), alarm.getEndDate()));
+            alarmList.add(new AlarmResponse(alarm.getMedicine().getSerial(), alarm.getMedicine().getName(), alarm.getTimeList()));
         }
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "알림 조회 성공", alarmList),
