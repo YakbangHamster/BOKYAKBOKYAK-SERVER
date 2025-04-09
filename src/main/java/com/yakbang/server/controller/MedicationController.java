@@ -35,7 +35,7 @@ public class MedicationController {
 
     // 부작용 조회
     @GetMapping("/side_effects/{serial}")
-    public ResponseEntity searchSideEffect(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String serial) throws IOException, InterruptedException {
+    public ResponseEntity searchSideEffect(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String serial) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
         return medicationService.searchSideEffect(serial);
     }
 
