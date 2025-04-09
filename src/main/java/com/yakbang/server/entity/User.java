@@ -46,9 +46,6 @@ public class User {
     private List<String> disease;
 
     @OneToMany(mappedBy = "user")
-    private List<Alarm> alarms;
-
-    @OneToMany(mappedBy = "user")
     private List<Medication> medications;
 
     @OneToMany(mappedBy = "user")

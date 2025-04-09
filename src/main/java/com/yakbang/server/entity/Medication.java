@@ -41,6 +41,9 @@ public class Medication {
     @Column(name = "take_record")
     private List<String> takeRecord;
 
+    @OneToOne(mappedBy = "medication")
+    private Alarm alarm;
+
     public void setTakeRecord(String record) { takeRecord.add(record); }
 
     public static Medication create(User user, Medicine medicine) {

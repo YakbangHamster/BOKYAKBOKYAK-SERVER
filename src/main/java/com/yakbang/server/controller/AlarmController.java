@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/alarms")
 @RequiredArgsConstructor
@@ -26,6 +28,12 @@ public class AlarmController {
     @PatchMapping("")
     public ResponseEntity modifyAlarm(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody AlarmRequest request) {
         return alarmService.modifyAlarm(userDetails.getUser(), request);
+    }
+
+    // 알림 삭제
+    @DeleteMapping("")
+    public ResponseEntity deleteAlarm(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> serialMap) {
+        return alarmService.deleteAlarm(userDetails.getUser(), serialMap.get("serial"));
     }
 
     // 등록 알림 조회

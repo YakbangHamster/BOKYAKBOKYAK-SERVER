@@ -36,7 +36,12 @@ public class UserConditionService {
     // 컨디션 수정
     public ResponseEntity<DefaultResponse> modifyCondition(User user, ModifyConditionRequest request) {
         // 컨디션 받아오기
-        UserCondition userCondition = userConditionRepository.findByDate(request.date());
+        UserCondition userCondition = userConditionRepository.findByUserAndDate(user, request.date());
+
+        if (userCondition == null) {
+            return new ResponseEntity<>(DefaultResponse.from(StatusCode.NOT_FOUND, "컨디션을 찾을 수 없습니다."),
+                    HttpStatus.NOT_FOUND);
+        }
 
         // 컨디션 텍스트 수정
         userCondition.setEmojiCode(request.emojiCode());
@@ -47,9 +52,9 @@ public class UserConditionService {
     }
 
     // 컨디션 삭제
-    public ResponseEntity<DefaultResponse> deleteCondition(Long userId, String date) {
+    public ResponseEntity<DefaultResponse> deleteCondition(User user, String date) {
         // 컨디션 받아오기
-        UserCondition userCondition = userConditionRepository.findByDate(date);
+        UserCondition userCondition = userConditionRepository.findByUserAndDate(user, date);
 
         if (userCondition == null) {
             return new ResponseEntity<>(DefaultResponse.from(StatusCode.NOT_FOUND, "컨디션을 찾을 수 없습니다."),

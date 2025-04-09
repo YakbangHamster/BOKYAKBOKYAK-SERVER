@@ -36,9 +36,6 @@ public class Medicine {
     private String howToTake;
 
     @OneToMany(mappedBy = "medicine")
-    private List<Alarm> alarms;
-
-    @OneToMany(mappedBy = "medicine")
     private List<Medication> medications;
 
     public static Medicine create(String serial, String name, String image, String efficacy, String howToTake) {

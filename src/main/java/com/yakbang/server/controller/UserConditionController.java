@@ -34,7 +34,7 @@ public class UserConditionController {
     // 컨디션 삭제
     @DeleteMapping("")
     public ResponseEntity deleteCondition(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> dateMap) {
-        return userConditionService.deleteCondition(userDetails.getUser().getUserId(), dateMap.get("date"));
+        return userConditionService.deleteCondition(userDetails.getUser(), dateMap.get("date"));
     }
 
     // 등록 컨디션 조회
