@@ -25,13 +25,13 @@ public class MedicationController {
 
     // OCR 약 등록
     @PostMapping("")
-    public ResponseEntity<?> addMedicineWithOCR(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> urlMap) throws IOException, ParseException {
+    public ResponseEntity<?> addMedicineWithOCR(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> urlMap) throws IOException, InterruptedException {
         return medicationService.addMedicineWithOCR(urlMap.get("url"));
     }
 
     // 부작용 조회
     @GetMapping("/side_effects/{serial}")
-    public ResponseEntity searchSideEffect(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String serial) throws IOException, ParseException {
+    public ResponseEntity searchSideEffect(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String serial) throws IOException, InterruptedException {
         return medicationService.searchSideEffect(serial);
     }
 

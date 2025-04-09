@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,16 +27,16 @@ public class MedicationService {
     private final ChatService chatService;
 
     // OCR 약 등록
-    public ResponseEntity<DefaultResponse> addMedicineWithOCR(String url) throws IOException, ParseException {
+    public ResponseEntity<DefaultResponse> addMedicineWithOCR(String url) throws IOException, InterruptedException {
         String ocr = GoogleVisionOCR.execute(url);
-        String response = chatService.getChatGPT(ocr + "\n이 중에서 약 이름만 골라서 용량이랑 괄호 내용을 빼고 ,(콜론)으로 구분해줘");
+        String response = chatService.getChatGPT(ocr + "\n이 중에서 약 이름만 골라서 용량이랑 괄호 내용을 빼고 ;으로 구분해줘");
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "약 등록 성공", response),
         HttpStatus.OK);
     }
 
     // 부작용 조회
-    public ResponseEntity<DefaultResponse> searchSideEffect(String serial) throws IOException, ParseException {
+    public ResponseEntity<DefaultResponse> searchSideEffect(String serial) throws IOException, InterruptedException {
         Medicine medicine = medicineRepository.findBySerial(serial);
         String response = chatService.getChatGPT(medicine.getName() + "의 부작용 상세하게 알려줘. 한국 약 기준으로 부작용부터 알려줘.");
 
