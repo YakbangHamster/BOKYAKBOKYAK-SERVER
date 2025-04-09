@@ -24,9 +24,9 @@ public class UserConditionService {
     private final UserConditionRepository userConditionRepository;
 
     // 컨디션 등록
-    public ResponseEntity<DefaultResponse> addCondition(User user, String conditionText) {
+    public ResponseEntity<DefaultResponse> addCondition(User user, String emojiCode) {
         // 컨디션 등록
-        UserCondition userCondition = UserCondition.create(user, conditionText, LocalDate.now().toString());
+        UserCondition userCondition = UserCondition.create(user, emojiCode, LocalDate.now().toString());
         userConditionRepository.save(userCondition);
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "컨디션 등록 성공"),
@@ -43,6 +43,21 @@ public class UserConditionService {
         userConditionRepository.save(userCondition);
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "컨디션 수정 성공"),
+                HttpStatus.OK);
+    }
+
+    // 컨디션 삭제
+    public ResponseEntity<DefaultResponse> deleteCondition(Long userId, String date) {
+        // 컨디션 받아오기
+        UserCondition userCondition = userConditionRepository.findByDate(date);
+
+        if (userCondition == null) {
+            return new ResponseEntity<>(DefaultResponse.from(StatusCode.NOT_FOUND, "컨디션을 찾을 수 없습니다."),
+                    HttpStatus.NOT_FOUND);
+        }
+        userConditionRepository.delete(userCondition);
+
+        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "컨디션 삭제 성공"),
                 HttpStatus.OK);
     }
 
