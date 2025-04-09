@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.Map;
 
@@ -21,14 +23,14 @@ public class MedicationController {
 
     // 약 검색
     @GetMapping("")
-    public ResponseEntity getMedicine(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> medicineNameMap) throws IOException, InterruptedException {
+    public ResponseEntity getMedicine(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> medicineNameMap) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
         return medicationService.getMedicine(medicineNameMap.get("medicineName"));
     }
 
     // OCR 약 등록
     @PostMapping("")
-    public ResponseEntity<?> addMedicineWithOCR(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> urlMap) throws IOException, InterruptedException {
-        return medicationService.addMedicineWithOCR(urlMap.get("url"));
+    public ResponseEntity<?> addMedicineWithOCR(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> urlMap) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
+        return medicationService.addMedicineWithOCR(userDetails.getUser().getUserId(), urlMap.get("url"));
     }
 
     // 부작용 조회

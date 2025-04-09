@@ -29,10 +29,10 @@ public class Medicine {
     @Column(length = 100, nullable = false)
     private String image;
 
-    @Column
+    @Column(nullable = false)
     private String efficacy;
 
-    @Column
+    @Column(length = 3000, nullable = false)
     private String howToTake;
 
     @OneToMany(mappedBy = "medicine")
@@ -40,16 +40,6 @@ public class Medicine {
 
     @OneToMany(mappedBy = "medicine")
     private List<Medication> medications;
-
-    public static Medicine create(String serial, String name, String image) {
-        return Medicine.builder()
-                .serial(serial)
-                .name(name)
-                .image(image)
-                .efficacy(null)
-                .howToTake(null)
-                .build();
-    }
 
     public static Medicine create(String serial, String name, String image, String efficacy, String howToTake) {
         return Medicine.builder()

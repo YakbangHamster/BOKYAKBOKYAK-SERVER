@@ -26,7 +26,7 @@ public class Alarm {
     @JoinColumn(name = "medicine_id", referencedColumnName = "medicine_id")
     private Medicine medicine;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "user_id", referencedColumnName = "user_id"),
             @JoinColumn(name = "medicine_id", referencedColumnName = "medicine_id")

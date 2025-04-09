@@ -29,10 +29,10 @@ public class Medication {
     @Column
     private List<Boolean> schedule;
 
-    @Column(name = "start_date", length = 15, nullable = false)
+    @Column(name = "start_date", length = 15)
     private String startDate;
 
-    @Column(name = "end_date", length = 15, nullable = false)
+    @Column(name = "end_date", length = 15)
     private String endDate;
 
     @Column
@@ -44,11 +44,16 @@ public class Medication {
     public void setTakeRecord(String record) { takeRecord.add(record); }
 
     public static Medication create(User user, Medicine medicine) {
+        List<Boolean> schedule = new ArrayList<>();
         List<String> takeRecord = new ArrayList<>();
 
         return Medication.builder()
                 .user(user)
                 .medicine(medicine)
+                .schedule(schedule)
+                .startDate(null)
+                .endDate(null)
+                .number(0)
                 .takeRecord(takeRecord)
                 .build();
     }
