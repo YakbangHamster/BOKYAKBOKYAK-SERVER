@@ -2,6 +2,7 @@ package com.yakbang.server.service;
 
 import com.yakbang.server.context.StatusCode;
 import com.yakbang.server.dto.response.DefaultResponse;
+import com.yakbang.server.dto.response.MedicineResponse;
 import com.yakbang.server.entity.Medicine;
 import com.yakbang.server.entity.Medication;
 import com.yakbang.server.entity.User;
@@ -25,13 +26,28 @@ public class MedicationService {
     private final MedicineRepository medicineRepository;
     private final MedicationRepository medicationRepository;
     private final ChatService chatService;
+    private final MedicineService medicineService;
+
+    // 약 검색
+    public ResponseEntity<DefaultResponse> getMedicine(String medicineName) throws IOException, InterruptedException {
+        List<MedicineResponse> response = medicineService.getMedicine(medicineName);
+
+        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "약 검색 성공", response),
+                HttpStatus.OK);
+    }
+
 
     // OCR 약 등록
     public ResponseEntity<DefaultResponse> addMedicineWithOCR(String url) throws IOException, InterruptedException {
         String ocr = GoogleVisionOCR.execute(url);
-        String response = chatService.getChatGPT(ocr + "\n이 중에서 약 이름만 골라서 용량이랑 괄호 내용을 빼고 ;으로 구분해줘");
+        String response = chatService.getChatGPT(ocr + "\n이 중에서 약 이름만 골라서 약 이름, 용량, 괄호 내용 보이는 부분까지만 포함하고 ;으로 구분해줘");
 
-        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "약 등록 성공", response),
+        String[] medicines = response.split(";");
+        for (int i = 0; i < medicines.length; i++) {
+            medicineService.addMedicine(medicines[i]);
+        }
+
+        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "약 등록 성공"),
         HttpStatus.OK);
     }
 

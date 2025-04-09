@@ -40,7 +40,7 @@ public class UserController {
 
     // Access Token 재발급
     @PostMapping("/reissue")
-    public ResponseEntity<DefaultResponse> reissue(@RequestHeader("refresh") String refreshToken) {
+    public ResponseEntity reissue(@RequestHeader("refresh") String refreshToken) {
         return userService.reissue(refreshToken.replace("Bearer ", ""));
     }
 

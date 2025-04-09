@@ -41,6 +41,16 @@ public class Medicine {
     @OneToMany(mappedBy = "medicine")
     private List<Medication> medications;
 
+    public static Medicine create(String serial, String name, String image) {
+        return Medicine.builder()
+                .serial(serial)
+                .name(name)
+                .image(image)
+                .efficacy(null)
+                .howToTake(null)
+                .build();
+    }
+
     public static Medicine create(String serial, String name, String image, String efficacy, String howToTake) {
         return Medicine.builder()
                 .serial(serial)
