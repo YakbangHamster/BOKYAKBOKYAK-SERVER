@@ -4,7 +4,6 @@ import com.yakbang.server.dto.etc.CustomUserDetails;
 import com.yakbang.server.dto.request.AddMedicineRequest;
 import com.yakbang.server.dto.request.DeleteMedicationRequest;
 import com.yakbang.server.dto.request.MedicineDetailRequest;
-import com.yakbang.server.dto.response.DefaultResponse;
 import com.yakbang.server.security.TokenProvider;
 import com.yakbang.server.service.MedicationService;
 import lombok.RequiredArgsConstructor;

@@ -2,7 +2,6 @@ package com.yakbang.server.controller;
 
 import com.yakbang.server.dto.etc.CustomUserDetails;
 import com.yakbang.server.dto.request.ModifyConditionRequest;
-import com.yakbang.server.entity.User;
 import com.yakbang.server.security.TokenProvider;
 import com.yakbang.server.service.UserConditionService;
 import lombok.RequiredArgsConstructor;
