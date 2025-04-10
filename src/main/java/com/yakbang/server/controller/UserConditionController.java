@@ -22,7 +22,7 @@ public class UserConditionController {
     // 컨디션 등록
     @PostMapping("")
     public ResponseEntity addCondition(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> emojiCodeMap) {
-        return userConditionService.addCondition(userDetails.getUser(), emojiCodeMap.get("emojiCode"));
+        return userConditionService.addCondition(userDetails.getUser().getUserId(), emojiCodeMap.get("emojiCode"));
     }
 
     // 컨디션 수정
@@ -39,7 +39,7 @@ public class UserConditionController {
 
     // 등록 컨디션 조회
     @GetMapping("")
-    public ResponseEntity getConditions(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return userConditionService.getConditions(userDetails.getUser());
+    public ResponseEntity getConditions(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> dateMap) {
+        return userConditionService.getConditions(userDetails.getUser(), dateMap.get("date"));
     }
 }

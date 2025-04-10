@@ -6,9 +6,7 @@ import com.yakbang.server.config.MedicineConfig;
 import com.yakbang.server.config.MedicineDetailConfig;
 import com.yakbang.server.dto.response.MedicineResponse;
 import com.yakbang.server.entity.Medicine;
-import com.yakbang.server.repository.MedicationRepository;
 import com.yakbang.server.repository.MedicineRepository;
-import com.yakbang.server.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -34,9 +32,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class MedicineService {
-    private final UserRepository userRepository;
     private final MedicineRepository medicineRepository;
-    private final MedicationRepository medicationRepository;
 
     private final MedicineConfig medicineConfig;
     private final MedicineDetailConfig medicineDetailConfig;
@@ -47,21 +43,7 @@ public class MedicineService {
     public String addMedicine(String medicineName) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
         String responseSerial = "";
 
-        // URI 구성
-        String uri = String.format("%s?serviceKey=%s&type=%s&item_name=%s",
-                medicineConfig.getBaseUrl(),
-                medicineConfig.getServiceKey(),
-                medicineConfig.getType(),
-                URLEncoder.encode(medicineName, StandardCharsets.UTF_8) // 한글 인코딩
-        );
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(uri))
-                .GET()
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        JsonNode items = objectMapper.readTree(response.body()).path("body").path("items");
+        JsonNode items = getMedicineItems(medicineName);
 
         if (items.isEmpty()) {
             return responseSerial;
@@ -72,7 +54,7 @@ public class MedicineService {
                 String serial = item.path("ITEM_SEQ").asText();
                 String name = item.path("ITEM_NAME").asText();
                 String image = item.path("ITEM_IMAGE").asText();
-                List<String> medicineDetail = getMedicineDetail(serial);
+                List<String> medicineDetail = getMedicineDetail(name);
 
                 Medicine medicine = medicineRepository.findBySerial(serial);
                 if (medicine == null) {
@@ -93,21 +75,7 @@ public class MedicineService {
         // 응답 리스트 생성
         List<MedicineResponse> responseList = new ArrayList<>();
 
-        // URI 구성
-        String uri = String.format("%s?serviceKey=%s&type=%s&item_name=%s",
-                medicineConfig.getBaseUrl(),
-                medicineConfig.getServiceKey(),
-                medicineConfig.getType(),
-                URLEncoder.encode(medicineName, StandardCharsets.UTF_8) // 한글 인코딩
-        );
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(uri))
-                .GET()
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        JsonNode items = objectMapper.readTree(response.body()).path("body").path("items");
+        JsonNode items = getMedicineItems(medicineName);
 
         if (items.isEmpty()) {
             return responseList;
@@ -118,7 +86,7 @@ public class MedicineService {
                 String serial = item.path("ITEM_SEQ").asText();
                 String name = item.path("ITEM_NAME").asText();
                 String image = item.path("ITEM_IMAGE").asText();
-                List<String> medicineDetail = getMedicineDetail(serial);
+                List<String> medicineDetail = getMedicineDetail(name);
 
                 responseList.add(new MedicineResponse(serial, name, image, medicineDetail.get(0), medicineDetail.get(1)));
             }
@@ -128,12 +96,12 @@ public class MedicineService {
     }
 
     // 의약품제품허가정보 API에서 주의사항 검색
-    public String getCaution(String serial) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
+    public String getCaution(String name) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
         // 응답 리스트 생성
         String responseStr = "";
 
         // 검색
-        JsonNode items = getItems(serial);
+        JsonNode items = getMedicineDetailItems(name);
 
         if (items.isEmpty()) {
             return responseStr;
@@ -150,12 +118,12 @@ public class MedicineService {
     }
 
     // 의약품제품허가정보 API에서 효능효과, 복용법 검색
-    private List<String> getMedicineDetail(String serial) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
+    private List<String> getMedicineDetail(String name) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
         // 응답 리스트 생성
         List<String> responseStr = new ArrayList<>();
         
         // 검색
-        JsonNode items = getItems(serial);
+        JsonNode items = getMedicineDetailItems(name);
 
         if (items.isEmpty()) {
             return responseStr;
@@ -174,13 +142,33 @@ public class MedicineService {
         return responseStr;
     }
 
+    // 의약품 낱알식별 정보 검색
+    private JsonNode getMedicineItems(String medicineName) throws IOException, InterruptedException {
+        // URI 구성
+        String uri = String.format("%s?serviceKey=%s&type=%s&item_name=%s",
+                medicineConfig.getBaseUrl(),
+                medicineConfig.getServiceKey(),
+                medicineConfig.getType(),
+                URLEncoder.encode(medicineName, StandardCharsets.UTF_8) // 한글 인코딩
+        );
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(uri))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return objectMapper.readTree(response.body()).path("body").path("items");
+    }
+
+
     // 의약품제품허가정보 검색
-    private JsonNode getItems(String serial) throws IOException, InterruptedException {
-        String uri = String.format("%s?serviceKey=%s&type=%s&item_seq=%s",
+    private JsonNode getMedicineDetailItems(String medicineName) throws IOException, InterruptedException {
+        String uri = String.format("%s?serviceKey=%s&type=%s&item_name=%s",
                 medicineDetailConfig.getBaseUrl(),
                 medicineDetailConfig.getServiceKey(),
                 medicineDetailConfig.getType(),
-                serial
+                URLEncoder.encode(medicineName, StandardCharsets.UTF_8)
         );
 
         HttpRequest request = HttpRequest.newBuilder()
