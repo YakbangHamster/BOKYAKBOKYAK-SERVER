@@ -4,6 +4,7 @@ import com.yakbang.server.composite_key.MedicationKey;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,25 +31,25 @@ public class Medication {
     private List<Boolean> schedule;
 
     @Column(name = "start_date", length = 15)
-    private String startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date", length = 15)
-    private String endDate;
+    private LocalDate endDate;
 
     @Column
     private int number;
 
     @Column(name = "take_record")
-    private List<String> takeRecord;
+    private List<LocalDate> takeRecord;
 
     @OneToOne(mappedBy = "medication")
     private Alarm alarm;
 
-    public void setTakeRecord(String record) { takeRecord.add(record); }
+    public void setTakeRecord(LocalDate record) { takeRecord.add(record); }
 
     public static Medication create(User user, Medicine medicine) {
         List<Boolean> schedule = new ArrayList<>();
-        List<String> takeRecord = new ArrayList<>();
+        List<LocalDate> takeRecord = new ArrayList<>();
 
         return Medication.builder()
                 .user(user)

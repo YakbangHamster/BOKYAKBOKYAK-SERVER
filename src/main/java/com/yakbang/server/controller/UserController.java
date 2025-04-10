@@ -2,11 +2,9 @@ package com.yakbang.server.controller;
 
 import com.yakbang.server.dto.etc.CustomUserDetails;
 import com.yakbang.server.dto.request.AddDetailRequest;
+import com.yakbang.server.dto.request.MyPageRequest;
 import com.yakbang.server.dto.request.SignInRequest;
 import com.yakbang.server.dto.request.SignUpRequest;
-import com.yakbang.server.dto.response.DefaultResponse;
-import com.yakbang.server.entity.User;
-import com.yakbang.server.security.TokenProvider;
 import com.yakbang.server.service.ChatService;
 import com.yakbang.server.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,6 +58,12 @@ public class UserController {
     @PatchMapping("/detail")
     public ResponseEntity addDetail(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody AddDetailRequest request) {
         return userService.addDetail(userDetails.getUser(), request);
+    }
+
+    // 마이페이지 수정
+    @PatchMapping("/myPage")
+    public ResponseEntity modifyMyPage(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MyPageRequest request) {
+        return userService.modifyMyPage(userDetails.getUser().getUserId(), request);
     }
 
     // 마이페이지 조회

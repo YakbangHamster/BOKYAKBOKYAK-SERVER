@@ -2,6 +2,7 @@ package com.yakbang.server.service;
 
 import com.yakbang.server.context.StatusCode;
 import com.yakbang.server.dto.request.AlarmRequest;
+import com.yakbang.server.dto.request.SetAlarmRequest;
 import com.yakbang.server.dto.response.DefaultResponse;
 import com.yakbang.server.dto.response.AlarmResponse;
 import com.yakbang.server.entity.Alarm;
@@ -77,6 +78,19 @@ public class AlarmService {
                 HttpStatus.OK);
     }
 
+    // 알림 상태 변화
+    public ResponseEntity<DefaultResponse> setAlarm(User user, SetAlarmRequest request) {
+        Medicine medicine = medicineRepository.findByName(request.medicineName());
+        Medication medication = medicationRepository.findByUserAndMedicine(user, medicine);
+        Alarm alarm = alarmRepository.findByMedication(medication);
+
+        alarm.setSetting(request.isSet());
+        alarmRepository.save(alarm);
+
+        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "알림 상태 변화 성공"),
+                HttpStatus.OK);
+    }
+
     // 등록 알림 조회
     public ResponseEntity<DefaultResponse> getAlarm(User user) {
         List<AlarmResponse> alarmList = new ArrayList<>();
@@ -86,7 +100,7 @@ public class AlarmService {
             Alarm alarm = alarms.get(i);
 
             Medicine medicine = alarm.getMedication().getMedicine();
-            alarmList.add(new AlarmResponse(medicine.getSerial(), medicine.getName(), alarm.getTimeList()));
+            alarmList.add(new AlarmResponse(medicine.getName(), alarm.getTimeList(), alarm.isSetting()));
         }
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "알림 조회 성공", alarmList),

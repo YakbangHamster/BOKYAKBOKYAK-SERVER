@@ -33,10 +33,14 @@ public class Alarm {
     @Column(name = "time_list")
     private List<String> timeList;
 
+    @Column
+    private boolean setting;
+
     public static Alarm create(Medication medication, List<String> timeList) {
         return Alarm.builder()
                 .medication(medication)
                 .timeList(timeList)
+                .setting(true)
                 .build();
     }
 }

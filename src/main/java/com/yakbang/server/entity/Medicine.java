@@ -20,7 +20,7 @@ public class Medicine {
     @Column(name = "medicine_id", unique = true, nullable = false)
     private long medicineId;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String serial;
 
     @Column(length = 40, nullable = false)

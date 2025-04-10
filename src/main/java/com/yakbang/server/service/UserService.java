@@ -1,6 +1,7 @@
 package com.yakbang.server.service;
 
 import com.yakbang.server.context.StatusCode;
+import com.yakbang.server.dto.request.MyPageRequest;
 import com.yakbang.server.dto.request.SignInRequest;
 import com.yakbang.server.dto.request.SignUpRequest;
 import com.yakbang.server.dto.request.AddDetailRequest;
@@ -82,6 +83,7 @@ public class UserService {
                 HttpStatus.OK);
     }
 
+    // Access Token 재발급
     public ResponseEntity<DefaultResponse> reissue(String refreshToken) {
         // 1. refresh token 유효성 검증
         if (!tokenProvider.isValidToken(refreshToken)) {
@@ -152,6 +154,22 @@ public class UserService {
         userRepository.save(user);
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "상세정보 등록 성공"),
+                HttpStatus.OK);
+    }
+
+    // 마이페이지 수정
+    public ResponseEntity<DefaultResponse> modifyMyPage(Long userId, MyPageRequest request) {
+        User user = userRepository.findByUserId(userId);
+        if (request.name() != null) user.setUsername(request.name());
+        if (request.email() != null) user.setEmail(request.email());
+        if (request.age() != null) user.setAge(request.age());
+        if (request.sex() != null) user.setSex(request.sex());
+        if (request.height() != null) user.setHeight(request.height());
+        if (request.weight() != null) user.setWeight(request.weight());
+        if (request.disease() != null) user.setDisease(request.disease());
+        userRepository.save(user);
+
+        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "마이페이지 수정 성공"),
                 HttpStatus.OK);
     }
 

@@ -2,6 +2,7 @@ package com.yakbang.server.controller;
 
 import com.yakbang.server.dto.etc.CustomUserDetails;
 import com.yakbang.server.dto.request.AlarmRequest;
+import com.yakbang.server.dto.request.SetAlarmRequest;
 import com.yakbang.server.security.TokenProvider;
 import com.yakbang.server.service.AlarmService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,12 @@ public class AlarmController {
     @DeleteMapping("")
     public ResponseEntity deleteAlarm(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> serialMap) {
         return alarmService.deleteAlarm(userDetails.getUser(), serialMap.get("serial"));
+    }
+
+    // 알림 상태 변화
+    @PatchMapping("/set")
+    public ResponseEntity setAlarm(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody SetAlarmRequest request) {
+        return alarmService.setAlarm(userDetails.getUser(), request);
     }
 
     // 등록 알림 조회
