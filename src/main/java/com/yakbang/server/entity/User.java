@@ -45,10 +45,10 @@ public class User {
     @Column
     private List<String> disease;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Medication> medications;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserCondition> userConditions;
 
     public static User create(String identity, String password, String email) {

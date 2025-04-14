@@ -42,7 +42,7 @@ public class Medication {
     @Column(name = "take_record")
     private List<LocalDate> takeRecord;
 
-    @OneToOne(mappedBy = "medication")
+    @OneToOne(mappedBy = "medication", cascade = CascadeType.ALL, orphanRemoval = true)
     private Alarm alarm;
 
     public void setTakeRecord(LocalDate record) { takeRecord.add(record); }

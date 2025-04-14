@@ -117,6 +117,27 @@ public class UserService {
                 HttpStatus.OK);
     }
 
+    // 로그아웃
+    @Transactional
+    public ResponseEntity<DefaultResponse> logout(Long userId) {
+        // 리프레시 토큰 삭제
+        refreshTokenRepository.deleteByUserId(userId);
+
+        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "로그아웃 성공"),
+                HttpStatus.OK);
+    }
+
+    // 탈퇴
+    @Transactional
+    public ResponseEntity<DefaultResponse> deleteUser(Long userId) {
+        // 리프레시 토큰 및 유저 정보, 관련 객체 cascade 삭제
+        refreshTokenRepository.deleteByUserId(userId);
+        userRepository.deleteById(userId);
+
+        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "탈퇴 성공"),
+                HttpStatus.OK);
+    }
+
     // 아이디 확인
     public ResponseEntity<DefaultResponse> checkIdentity(String identity) {
         // 아이디로 유저 검색
