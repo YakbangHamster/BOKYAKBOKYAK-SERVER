@@ -36,6 +36,18 @@ public class UserController {
         return userService.signIn(request);
     }
 
+    // 로그아웃
+    @DeleteMapping("/logout")
+    public ResponseEntity logout(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return userService.logout(userDetails.getUser().getUserId());
+    }
+
+    // 탈퇴
+    @DeleteMapping("/delete")
+    public ResponseEntity deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return userService.deleteUser(userDetails.getUser().getUserId());
+    }
+
     // Access Token 재발급
     @PostMapping("/reissue")
     public ResponseEntity reissue(@RequestHeader("refresh") String refreshToken) {
@@ -61,13 +73,13 @@ public class UserController {
     }
 
     // 마이페이지 수정
-    @PatchMapping("/myPage")
+    @PatchMapping("/my-page")
     public ResponseEntity modifyMyPage(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MyPageRequest request) {
         return userService.modifyMyPage(userDetails.getUser().getUserId(), request);
     }
 
     // 마이페이지 조회
-    @GetMapping("/myPage")
+    @GetMapping("/my-page")
     public ResponseEntity getMyPage(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return userService.getMyPage(userDetails.getUser());
     }

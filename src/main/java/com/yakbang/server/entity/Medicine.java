@@ -35,7 +35,7 @@ public class Medicine {
     @Column(length = 3000, nullable = false)
     private String howToTake;
 
-    @OneToMany(mappedBy = "medicine")
+    @OneToMany(mappedBy = "medicine", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Medication> medications;
 
     public static Medicine create(String serial, String name, String image, String efficacy, String howToTake) {

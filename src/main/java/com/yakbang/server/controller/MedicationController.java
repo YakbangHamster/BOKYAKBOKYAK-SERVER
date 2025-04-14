@@ -42,7 +42,7 @@ public class MedicationController {
     }
 
     // 부작용 조회
-    @GetMapping("/side_effects/{name}")
+    @GetMapping("/side-effects/{name}")
     public ResponseEntity searchSideEffect(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String name) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
         return medicationService.searchSideEffect(name);
     }
