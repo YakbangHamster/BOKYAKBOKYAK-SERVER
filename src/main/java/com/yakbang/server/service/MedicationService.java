@@ -121,7 +121,7 @@ public class MedicationService {
     public ResponseEntity<DefaultResponse> getMedication(User user, String medicineName) {
         List<String> response = new ArrayList<>();
 
-        Medicine medicine = medicineRepository.findByName(medicineName);
+        Medicine medicine = medicineRepository.findByNameContaining(medicineName);
         if (medicine == null) {
             return new ResponseEntity<>(DefaultResponse.from(StatusCode.NOT_FOUND, "해당 약을 찾을 수 없습니다."),
                     HttpStatus.NOT_FOUND);
