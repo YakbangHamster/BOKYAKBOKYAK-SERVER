@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class RefreshToken {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
     @Column(nullable = false, length = 500)
@@ -23,6 +22,7 @@ public class RefreshToken {
     private LocalDateTime expiryDate;
 
     @OneToOne
+    @MapsId
     @JoinColumn(name = "user_id", unique = true)
     private User user;
 

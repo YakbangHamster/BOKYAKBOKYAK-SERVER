@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MedicineRepository extends JpaRepository<Medicine, Long> {
     Medicine findBySerial(String serial);
     Medicine findByName(String name);
+    Medicine findByNameContaining(String name);
 }
