@@ -155,6 +155,8 @@ public class MedicationService {
         List<Medication> medications = medicationRepository.findAllByUser(user);
         for (Medication medication: medications) {
             List<LocalDate> takeRecord = medication.getTakeRecord();
+            if (takeRecord.isEmpty()) continue;
+
             for (int i = 0; i < takeRecord.size(); i++) {
                 LocalDate record = takeRecord.get(i);
 
@@ -200,9 +202,8 @@ public class MedicationService {
         // 복약순응도 계산(실제 복약 개수 / 기대 복약 개수 * 100)
         double compliance = (double) totalMedicine / expected * 100;
 
-        new ReportResponse(user.getUsername(), startDate.format(formatter), endDate.format(formatter), scheduleInteger, reportMedications, compliance);
-
-        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "레포트 조회 성공"),
+        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "레포트 조회 성공",
+                new ReportResponse(user.getUsername(), startDate.format(formatter), endDate.format(formatter), scheduleInteger, reportMedications, compliance)),
                 HttpStatus.OK);
     }
 
@@ -317,13 +318,17 @@ public class MedicationService {
         int day = today.getDayOfWeek().getValue();
 
         for (Medication medication: medicationList) {
-            // 오늘이 startDate와 endDate의 사이일 때
-            if ((today.isEqual(medication.getStartDate()) || today.isAfter(medication.getStartDate())) && (today.isEqual(medication.getEndDate()) || today.isBefore(medication.getEndDate()))) {
-                List<Boolean> schedule = medication.getSchedule();
+            LocalDate startDate = medication.getStartDate();
+            LocalDate endDate = medication.getEndDate();
+            if (!(startDate == null || endDate == null)) {
+                // 오늘이 startDate와 endDate의 사이일 때
+                if ((today.isEqual(startDate) || today.isAfter(startDate)) && (today.isEqual(endDate) || today.isBefore(endDate))) {
+                    List<Boolean> schedule = medication.getSchedule();
 
-                // 오늘이 복약 요일이면
-                if (schedule.get(day - 1)) {
-                    response.add(new GetTodayMedicationResponse(medication.getMedicine().getName(), medication.getMedicine().getImage(), medication.getAlarm().getTimeList()));
+                    // 오늘이 복약 요일이면
+                    if (schedule.get(day - 1)) {
+                        response.add(new GetTodayMedicationResponse(medication.getMedicine().getName(), medication.getMedicine().getImage(), medication.getAlarm().getTimeList()));
+                    }
                 }
             }
         }
