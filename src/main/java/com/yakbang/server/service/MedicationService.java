@@ -65,7 +65,7 @@ public class MedicationService {
         String ocr = GoogleVisionOCR.execute(url);
         System.out.println("ocr 결과: " + ocr);
 
-        String response = chatService.getChatGPT(ocr + "\n이 중에서 약 이름만 골라서 적어줘. 이미 적혀있는 부분까지만 적고, ;으로만 구분해줘");
+        String response = chatService.getChatGPT(ocr + "\n이 중에서 약 이름이랑 용량만 골라서 적어줘. 이미 적혀있는 부분까지만 적고, ;으로만 구분해줘");
         System.out.println("gpt 결과: " + response);
 
         // 복약 정보를 등록하기 위해 약을 등록하면서 serial을 받아옴
