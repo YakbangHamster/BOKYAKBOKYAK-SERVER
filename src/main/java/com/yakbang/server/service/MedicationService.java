@@ -24,10 +24,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -94,6 +91,11 @@ public class MedicationService {
     // 부작용 조회
     public ResponseEntity<DefaultResponse> searchSideEffect(String name) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
         String response = medicineService.getCaution(name);
+
+        // 응답 가공
+        response = response.substring(0, 1000);
+        System.out.println("substring 결과: " + response);
+        response = chatService.getChatGPT(response + "\n의학 지식이 없는 일반인이 이해할 수 있도록 이 내용을 요약해줘. 줄내림같은 표현 없이 텍스트로만 적어줘.");
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "부작용 조회 성공", response),
                 HttpStatus.OK);
