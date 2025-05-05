@@ -71,7 +71,7 @@ public class MedicineService {
     }
 
     // 약 검색
-    public List<MedicineResponse> getSearchMedicine(String medicineName) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
+    public List<MedicineResponse> getSearchMedicine(String medicineName, int page) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
         // 응답 리스트 생성
         List<MedicineResponse> responseList = new ArrayList<>();
 
@@ -81,8 +81,12 @@ public class MedicineService {
             return responseList;
         }
 
+        int pageStart = page * 20;
         if (items.isArray()) {
-            for (JsonNode item : items) {
+            for (int i = pageStart; i < pageStart + 20; i++) {
+                if (items.get(i) == null) break;
+                JsonNode item = items.get(i);
+
                 String serial = item.path("ITEM_SEQ").asText();
                 String name = item.path("ITEM_NAME").asText();
                 String image = item.path("ITEM_IMAGE").asText();

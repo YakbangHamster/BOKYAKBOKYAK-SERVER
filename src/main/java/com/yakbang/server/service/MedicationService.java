@@ -41,8 +41,8 @@ public class MedicationService {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // 약 검색
-    public ResponseEntity<DefaultResponse> getMedicine(String medicineName) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
-        List<MedicineResponse> response = medicineService.getSearchMedicine(medicineName);
+    public ResponseEntity<DefaultResponse> getMedicine(String medicineName, int page) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
+        List<MedicineResponse> response = medicineService.getSearchMedicine(medicineName, page);
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "약 검색 성공", response),
                 HttpStatus.OK);
@@ -100,12 +100,15 @@ public class MedicationService {
     }
 
     // 등록 약 전체 조회
-    public ResponseEntity<DefaultResponse> getAllMedication(User user) {
+    public ResponseEntity<DefaultResponse> getAllMedication(User user, int page) {
         // 보유한 모든 복약 정보의 약 이름, 시작 날짜 반환
         List<AllMedicationResponse> response = new ArrayList<>();
 
         List<Medication> medication = medicationRepository.findAllByUser(user);
-        for (int i = 0; i < medication.size(); i++) {
+        int pageStart = page * 20;
+        for (int i = pageStart; i < pageStart + 20; i++) {
+            if (i >= medication.size()) break;
+
             LocalDate startDate = medication.get(i).getStartDate();
             String startDateString = null;
 
