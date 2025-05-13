@@ -159,6 +159,23 @@ public class MedicationService {
 
         List<Medication> medications = medicationRepository.findAllByUser(user);
         for (Medication medication: medications) {
+            if (medication.getStartDate() == null) continue;
+
+            // 기대 복약 개수를 구하기 위해 복약 기록의 startDate, endDate에 따라 반복문 범위 설정
+            int expectedStartdate = startDate.getDayOfWeek().getValue() - 1;
+            int expectedEndDate = 7;
+            if (medication.getStartDate().isAfter(startDate)) expectedStartdate += (int) ChronoUnit.DAYS.between(startDate, medication.getStartDate());
+            if (medication.getEndDate().isBefore(endDate)) expectedEndDate -= (int) ChronoUnit.DAYS.between(medication.getEndDate(), endDate);
+
+            // 복약 스케줄을 받아 해당하는 요일이 있으면 sum 증가, number 값을 곱해 해당 약의 한 주 전체 복약 개수 계산
+            int sum = 0;
+            List<Boolean> expectedSchedule = medication.getSchedule();
+            for (int i = expectedStartdate; i < expectedEndDate; i++) {
+                if (expectedSchedule.get(i)) sum++;
+            }
+            expected += sum * medication.getNumber();
+
+            // 실제 복약한 약의 수와 복약 기록 추가
             List<LocalDate> takeRecord = medication.getTakeRecord();
             if (takeRecord.isEmpty()) continue;
 
@@ -173,20 +190,6 @@ public class MedicationService {
                     percentMap.merge(medication.getMedicine().getName(), 1, Integer::sum);
                 }
             }
-
-            // 기대 복약 개수를 구하기 위해 복약 기록의 startDate, endDate에 따라 반복문 범위 설정
-            int expectedStartdate = startDate.getDayOfWeek().getValue() - 1;
-            int expectedEndDate = 7;
-            if (medication.getStartDate().isAfter(startDate)) expectedStartdate += (int) ChronoUnit.DAYS.between(medication.getStartDate(), startDate);
-            if (medication.getEndDate().isBefore(endDate)) expectedEndDate -= (int) ChronoUnit.DAYS.between(medication.getEndDate(), endDate);
-
-            // 복약 스케줄을 받아 해당하는 요일이 있으면 sum 증가, number 값을 곱해 해당 약의 한 주 전체 복약 개수 계산
-            int sum = 0;
-            List<Boolean> expectedSchedule = medication.getSchedule();
-            for (int i = expectedStartdate; i < expectedEndDate; i++) {
-                if (expectedSchedule.get(i)) sum++;
-            }
-            expected += sum * medication.getNumber();
         }
 
         // 스케줄 리스트로 변환
@@ -253,8 +256,10 @@ public class MedicationService {
         medicationRepository.save(medication);
 
         Alarm alarm = alarmRepository.findByMedication(medication);
-        if (request.time() != null) alarm.setTimeList(request.time());
-        alarmRepository.save(alarm);
+        if (request.time() != null && alarm != null) {
+            alarm.setTimeList(request.time());
+            alarmRepository.save(alarm);
+        }
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "복약 상세 수정 성공"),
                 HttpStatus.OK);
