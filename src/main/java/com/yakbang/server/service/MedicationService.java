@@ -177,7 +177,11 @@ public class MedicationService {
 
             // 실제 복약한 약의 수와 복약 기록 추가
             List<LocalDate> takeRecord = medication.getTakeRecord();
-            if (takeRecord.isEmpty()) continue;
+            // 실제 복약 기록이 없으면 0개 복약 등록
+            if (takeRecord.isEmpty()) {
+                percentMap.merge(medication.getMedicine().getName(), 0, Integer::sum);
+                continue;
+            }
 
             for (int i = 0; i < takeRecord.size(); i++) {
                 LocalDate record = takeRecord.get(i);
@@ -270,8 +274,10 @@ public class MedicationService {
         Medicine medicine = medicineRepository.findByName(medicineName);
         Medication medication = medicationRepository.findByUserAndMedicine(user, medicine);
         Alarm alarm = alarmRepository.findByMedication(medication);
+        List<String> timeList = null;
+        if (alarm != null) timeList = alarm.getTimeList();
 
-        MedicineDetailResponse response = new MedicineDetailResponse(user.getUsername(), medication.getSchedule(), medication.getStartDate().format(formatter), medication.getEndDate().format(formatter), medication.getNumber(), alarm.getTimeList());
+        MedicineDetailResponse response = new MedicineDetailResponse(user.getUsername(), medication.getSchedule(), medication.getStartDate().format(formatter), medication.getEndDate().format(formatter), medication.getNumber(), timeList);
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "복약 상세 조회 성공", response),
                 HttpStatus.OK);
