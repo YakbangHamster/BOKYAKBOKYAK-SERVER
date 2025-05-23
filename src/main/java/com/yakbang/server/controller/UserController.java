@@ -1,10 +1,7 @@
 package com.yakbang.server.controller;
 
 import com.yakbang.server.dto.etc.CustomUserDetails;
-import com.yakbang.server.dto.request.AddDetailRequest;
-import com.yakbang.server.dto.request.MyPageRequest;
-import com.yakbang.server.dto.request.SignInRequest;
-import com.yakbang.server.dto.request.SignUpRequest;
+import com.yakbang.server.dto.request.*;
 import com.yakbang.server.service.ChatService;
 import com.yakbang.server.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,8 +59,8 @@ public class UserController {
 
     // 비밀번호 변경
     @PatchMapping("/password")
-    public ResponseEntity changePassword(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> passwordMap) {
-        return userService.changePassword(userDetails.getUser(), passwordMap.get("password"));
+    public ResponseEntity changePassword(@RequestBody PasswordRequest request) {
+        return userService.changePassword(request);
     }
 
     // 상세정보 등록
