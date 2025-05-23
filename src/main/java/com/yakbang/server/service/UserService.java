@@ -1,10 +1,7 @@
 package com.yakbang.server.service;
 
 import com.yakbang.server.context.StatusCode;
-import com.yakbang.server.dto.request.MyPageRequest;
-import com.yakbang.server.dto.request.SignInRequest;
-import com.yakbang.server.dto.request.SignUpRequest;
-import com.yakbang.server.dto.request.AddDetailRequest;
+import com.yakbang.server.dto.request.*;
 import com.yakbang.server.dto.response.CheckUsernameReponse;
 import com.yakbang.server.dto.response.DefaultResponse;
 import com.yakbang.server.dto.response.MyPageResponse;
@@ -154,9 +151,12 @@ public class UserService {
     }
 
     // 비밀번호 변경
-    public ResponseEntity<DefaultResponse> changePassword(User user, String password) {
+    public ResponseEntity<DefaultResponse> changePassword(PasswordRequest request) {
+        // 사용자 검색
+        User user = userRepository.findByIdentity(request.identity());
+
         // 비밀번호 인코딩해서 변경하기
-        user.setPassword(passwordEncoder.encode(password));
+        user.setPassword(passwordEncoder.encode(request.password()));
         userRepository.save(user);
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "비밀번호 변경 성공"),
