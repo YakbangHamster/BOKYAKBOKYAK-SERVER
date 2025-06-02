@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // 쿠키 사용 안 함
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션을 사용하지 않으므로 STATELESS 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/sign-up", "/users/sign-in", "/users/identity/check", "/users/reissue",
+                        .requestMatchers("/users/sign-up", "/users/sign-in", "/users/identity/check", "users/password", "/users/reissue",
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll() // 일부 url 허용
                         .anyRequest().authenticated()
                 )

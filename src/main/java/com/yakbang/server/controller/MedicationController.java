@@ -25,7 +25,7 @@ public class MedicationController {
 
     // 약 검색
     @GetMapping("/search")
-    public ResponseEntity getMedicine(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam int page, @RequestBody Map<String, String> medicineNameMap) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
+    public ResponseEntity getMedicine(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam int page, @RequestParam Map<String, String> medicineNameMap) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
         return medicationService.getMedicine(medicineNameMap.get("medicineName"), page);
     }
 
@@ -79,7 +79,7 @@ public class MedicationController {
 
     // 복용약 상세 조회
     @GetMapping("/detail")
-    public ResponseEntity getDetail(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> medicineNameMap) {
+    public ResponseEntity getDetail(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Map<String, String> medicineNameMap) {
         return medicationService.getDetail(userDetails.getUser(), medicineNameMap.get("medicineName"));
     }
 

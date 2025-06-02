@@ -69,6 +69,12 @@ public class UserController {
         return userService.addDetail(userDetails.getUser(), request);
     }
 
+    // 사용자 이름 조회
+    @GetMapping("/name")
+    public ResponseEntity getName(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return userService.getName(userDetails.getUser());
+    }
+
     // 마이페이지 수정
     @PatchMapping("/my-page")
     public ResponseEntity modifyMyPage(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MyPageRequest request) {

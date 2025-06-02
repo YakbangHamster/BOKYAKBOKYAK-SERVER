@@ -178,6 +178,12 @@ public class UserService {
                 HttpStatus.OK);
     }
 
+    // 사용자 이름 조회
+    public ResponseEntity<DefaultResponse> getName(User user) {
+        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "사용자 이름 조회 성공", user.getUsername()),
+                HttpStatus.OK);
+    }
+
     // 마이페이지 수정
     public ResponseEntity<DefaultResponse> modifyMyPage(Long userId, MyPageRequest request) {
         User user = userRepository.findByUserId(userId);

@@ -38,7 +38,7 @@ public class UserConditionController {
 
     // 등록 컨디션 조회
     @GetMapping("")
-    public ResponseEntity getConditions(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> dateMap) {
+    public ResponseEntity getConditions(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Map<String, String> dateMap) {
         return userConditionService.getConditions(userDetails.getUser(), dateMap.get("date"));
     }
 }
