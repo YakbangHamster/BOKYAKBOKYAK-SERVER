@@ -79,7 +79,7 @@ public class MedicationController {
 
     // 복용약 상세 조회
     @GetMapping("/detail")
-    public ResponseEntity getDetail(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> medicineNameMap) {
+    public ResponseEntity getDetail(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Map<String, String> medicineNameMap) {
         return medicationService.getDetail(userDetails.getUser(), medicineNameMap.get("medicineName"));
     }
 
