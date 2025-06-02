@@ -73,6 +73,9 @@ public class MedicationService {
             serial.add(medicineService.addMedicine(medicines[i]));
         }
 
+        // 이름 반환 List
+        List<String> nameList = new ArrayList<>();
+
         // 복약 정보 등록
         for (int i = 0; i < serial.size(); i++) {
             User user = userRepository.findByUserId(userId);
@@ -82,9 +85,11 @@ public class MedicationService {
             if (medication == null) {
                 medicationRepository.save(Medication.create(user, medicine));
             }
+
+            nameList.add(medicine.getName());
         }
 
-        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "약 등록 성공"),
+        return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "약 등록 성공", nameList),
         HttpStatus.OK);
     }
 
