@@ -203,7 +203,7 @@ public class MedicationService {
 
         // 스케줄 리스트로 변환
         List<Integer> scheduleInteger = new ArrayList<>();
-        for (int i: schedule) scheduleInteger.add(schedule[i]);
+        for (int i: schedule) scheduleInteger.add(i);
     
         // 약별 복약 퍼센트
         List<ReportMedication> reportMedications = new ArrayList<>();
@@ -282,7 +282,7 @@ public class MedicationService {
         List<String> timeList = null;
         if (alarm != null) timeList = alarm.getTimeList();
 
-        MedicineDetailResponse response = new MedicineDetailResponse(user.getUsername(), medication.getSchedule(), medication.getStartDate().format(formatter), medication.getEndDate().format(formatter), medication.getNumber(), timeList);
+        MedicineDetailResponse response = new MedicineDetailResponse(medicineName, medication.getSchedule(), medication.getStartDate().format(formatter), medication.getEndDate().format(formatter), medication.getNumber(), timeList);
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "복약 상세 조회 성공", response),
                 HttpStatus.OK);

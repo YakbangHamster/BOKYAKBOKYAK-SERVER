@@ -1,6 +1,6 @@
 package com.yakbang.server.dto.request;
 
-public record ModifyConditionRequest(
+public record ConditionRequest(
         String date,
         String emojiCode
 ) {}

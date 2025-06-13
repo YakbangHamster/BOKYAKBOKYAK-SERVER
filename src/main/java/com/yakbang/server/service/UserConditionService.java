@@ -1,7 +1,7 @@
 package com.yakbang.server.service;
 
 import com.yakbang.server.context.StatusCode;
-import com.yakbang.server.dto.request.ModifyConditionRequest;
+import com.yakbang.server.dto.request.ConditionRequest;
 import com.yakbang.server.dto.response.DefaultResponse;
 import com.yakbang.server.entity.User;
 import com.yakbang.server.entity.UserCondition;
@@ -23,11 +23,11 @@ public class UserConditionService {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // 컨디션 등록
-    public ResponseEntity<DefaultResponse> addCondition(Long userId, String emojiCode) {
+    public ResponseEntity<DefaultResponse> addCondition(Long userId, ConditionRequest request) {
         User user = userRepository.findByUserId(userId);
 
         // 컨디션 등록
-        UserCondition userCondition = UserCondition.create(user, emojiCode, LocalDate.now());
+        UserCondition userCondition = UserCondition.create(user, request.emojiCode(), LocalDate.parse(request.date()));
         userConditionRepository.save(userCondition);
 
         return new ResponseEntity<>(DefaultResponse.from(StatusCode.OK, "컨디션 등록 성공"),
@@ -35,7 +35,7 @@ public class UserConditionService {
     }
 
     // 컨디션 수정
-    public ResponseEntity<DefaultResponse> modifyCondition(User user, ModifyConditionRequest request) {
+    public ResponseEntity<DefaultResponse> modifyCondition(User user, ConditionRequest request) {
         LocalDate date = LocalDate.parse(request.date(), formatter);
 
         // 컨디션 받아오기

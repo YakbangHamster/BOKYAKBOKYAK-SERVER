@@ -1,7 +1,7 @@
 package com.yakbang.server.controller;
 
 import com.yakbang.server.dto.etc.CustomUserDetails;
-import com.yakbang.server.dto.request.ModifyConditionRequest;
+import com.yakbang.server.dto.request.ConditionRequest;
 import com.yakbang.server.security.TokenProvider;
 import com.yakbang.server.service.UserConditionService;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +20,13 @@ public class UserConditionController {
 
     // 컨디션 등록
     @PostMapping("")
-    public ResponseEntity addCondition(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String, String> emojiCodeMap) {
-        return userConditionService.addCondition(userDetails.getUser().getUserId(), emojiCodeMap.get("emojiCode"));
+    public ResponseEntity addCondition(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ConditionRequest request) {
+        return userConditionService.addCondition(userDetails.getUser().getUserId(), request);
     }
 
     // 컨디션 수정
     @PatchMapping("")
-    public ResponseEntity modifyCondition(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ModifyConditionRequest request) {
+    public ResponseEntity modifyCondition(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ConditionRequest request) {
         return userConditionService.modifyCondition(userDetails.getUser(), request);
     }
 
